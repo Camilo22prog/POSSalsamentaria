@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet ef:*)",
+      "Bash(dotnet build:*)",
+      "Bash(grep -E \"\\\\.xaml$\")",
+      "Bash(xargs grep *)",
+      "Bash(xargs ls *)",
+      "Bash(grep -E \"\\\\.cs$\")",
+      "Bash(xargs -I {} basename {})"
+    ]
+  }
+}

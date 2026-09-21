@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch POS UI",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/POS.UI/bin/Debug/net8.0-windows/POS.UI.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/POS.UI",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

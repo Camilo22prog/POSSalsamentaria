@@ -1,0 +1,193 @@
+<Window x:Class="POS.UI.Views.Sales.AnularVentaView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Sales"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=viewmodels:AnularVentaViewModel}"
+        Title="{Binding Titulo}"
+        Height="400"
+        Width="550"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F5F5F5">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#F44336" 
+                CornerRadius="5" 
+                Padding="20"
+                Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="⚠️ ANULAR VENTA"
+                          FontSize="20"
+                          FontWeight="Bold"
+                          Foreground="White"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,5"/>
+                <TextBlock Text="Esta acción NO se puede deshacer"
+                          FontSize="12"
+                          Foreground="White"
+                          HorizontalAlignment="Center"
+                          Opacity="0.9"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenido -->
+        <Border Grid.Row="1"
+                Background="White"
+                BorderBrush="#E0E0E0"
+                BorderThickness="1"
+                CornerRadius="5"
+                Padding="20">
+            <StackPanel>
+                <TextBlock Text="Motivo de la anulación: *"
+                          FontSize="14"
+                          FontWeight="SemiBold"
+                          Margin="0,0,0,10"/>
+
+                <!-- ComboBox de motivos predefinidos -->
+                <ComboBox x:Name="cmbMotivos"
+                         FontSize="14"
+                         Padding="10,8"
+                         IsEditable="True"
+                         Text="{Binding Motivo, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,15">
+                    <ComboBoxItem Content="Error en el precio"/>
+                    <ComboBoxItem Content="Error en la cantidad"/>
+                    <ComboBoxItem Content="Cliente se arrepintió"/>
+                    <ComboBoxItem Content="Producto equivocado"/>
+                    <ComboBoxItem Content="Error del sistema"/>
+                    <ComboBoxItem Content="Duplicado"/>
+                    <ComboBoxItem Content="Otro motivo"/>
+                </ComboBox>
+
+                <!-- Información adicional -->
+                <Border Background="#FFF3E0"
+                       BorderBrush="#FFB74D"
+                       BorderThickness="1"
+                       CornerRadius="5"
+                       Padding="15"
+                       Margin="0,10,0,0">
+                    <StackPanel>
+                        <TextBlock Text="📋 Al anular esta venta:"
+                                  FontWeight="SemiBold"
+                                  Margin="0,0,0,8"/>
+                        <TextBlock Text="• La venta quedará marcada como ANULADA"
+                                  Margin="0,0,0,4"/>
+                        <TextBlock Text="• El inventario será revertido automáticamente"
+                                  Margin="0,0,0,4"/>
+                        <TextBlock Text="• Se registrará el motivo y el usuario"
+                                  Margin="0,0,0,4"/>
+                        <TextBlock Text="• Esta acción NO se puede deshacer"
+                                  FontWeight="SemiBold"
+                                  Foreground="#E65100"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Botones -->
+        <Grid Grid.Row="2" Margin="0,20,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="Cancelar"
+                    Padding="0,15"
+                    FontSize="16"
+                    Background="#E0E0E0"
+                    Foreground="#424242"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Command="{Binding CancelarCommand}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                           CornerRadius="5"
+                                           Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#BDBDBD"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Grid.Column="2"
+                    Content="⚠️ ANULAR VENTA"
+                    Padding="0,15"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Background="#F44336"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Command="{Binding AnularCommand}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                           CornerRadius="5"
+                                           Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#D32F2F"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#CCCCCC"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+
+        <!-- Loading Overlay -->
+        <Border Grid.Row="0"
+                Grid.RowSpan="3"
+                Background="#80000000"
+                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="⏳"
+                          FontSize="48"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,10"/>
+                <TextBlock Text="Anulando venta..."
+                          FontSize="18"
+                          Foreground="White"
+                          HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,284 @@
+<Window x:Class="POS.UI.Views.Sales.BuscarClienteDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Sales"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=viewmodels:BuscarClienteDialogViewModel}"
+        Title="Buscar Cliente"
+        Height="500" Width="520"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F5F5F5">
+
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="#673AB7" CornerRadius="6"
+                Padding="16,12" Margin="0,0,0,14">
+            <StackPanel>
+                <TextBlock Text="👤 BUSCAR CLIENTE"
+                           FontSize="17" FontWeight="Bold"
+                           Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Escribe nombre o documento · Ctrl+C para abrir"
+                           FontSize="11" Foreground="White" Opacity="0.8"
+                           HorizontalAlignment="Center" Margin="0,3,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Buscador -->
+        <Border Grid.Row="1"
+                BorderBrush="#673AB7" BorderThickness="2" CornerRadius="5"
+                Margin="0,0,0,12">
+            <Grid>
+                <TextBox x:Name="TxtBusqueda"
+                         Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="15" Padding="12,9" BorderThickness="0"
+                         Background="White"/>
+                <TextBlock Text="🔍  Buscar por nombre o documento..."
+                           IsHitTestVisible="False"
+                           Margin="14,0,0,0"
+                           VerticalAlignment="Center"
+                           Foreground="#9E9E9E" FontSize="14">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Busqueda}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
+        </Border>
+
+        <!-- Resultados -->
+        <Border Grid.Row="2"
+                Background="White" CornerRadius="6"
+                BorderBrush="#E0E0E0" BorderThickness="1"
+                Margin="0,0,0,10">
+            <Grid>
+            <!-- Estado vacío -->
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Resultados.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <!-- Cargando -->
+                <TextBlock Text="⏳" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,6"
+                           Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <TextBlock Text="Buscando..." FontSize="13" Foreground="#9E9E9E" HorizontalAlignment="Center"
+                           Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <!-- Sin resultados -->
+                <TextBlock Text="🔍" FontSize="36" HorizontalAlignment="Center" Margin="0,0,0,8"
+                           Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                <TextBlock Text="Ingresa al menos 2 caracteres para buscar"
+                           FontSize="13" Foreground="#9E9E9E" HorizontalAlignment="Center"
+                           Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+            </StackPanel>
+
+            <!-- Lista de resultados -->
+            <ListBox ItemsSource="{Binding Resultados}"
+                     BorderThickness="0" Background="Transparent"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Resultados.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.Style>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        <Setter Property="BorderBrush" Value="#F0F0F0"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#EDE7F6"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="14,10" Background="Transparent" Cursor="Hand">
+                            <Border.InputBindings>
+                                <MouseBinding MouseAction="LeftClick"
+                                              Command="{Binding DataContext.SeleccionarCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                              CommandParameter="{Binding}"/>
+                            </Border.InputBindings>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{Binding NombreCompleto}"
+                                               FontWeight="SemiBold" FontSize="14"/>
+                                    <TextBlock Text="{Binding NumeroDocumento}"
+                                               FontSize="12" Foreground="#757575" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Email}"
+                                           FontSize="12" Foreground="#9E9E9E"
+                                           VerticalAlignment="Center" Margin="12,0,0,0"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            </Grid>
+        </Border>
+
+        <!-- Cliente actualmente seleccionado en la pestaña -->
+        <Border Grid.Row="3"
+                Margin="0,0,0,14"
+                Padding="12,8"
+                Background="#EDE7F6"
+                BorderBrush="#9575CD" BorderThickness="1"
+                CornerRadius="5">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <!-- Visible por defecto; se colapsa si no hay cliente inicial -->
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ClienteInicial}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="👤"
+                           FontSize="14" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding ClienteInicial.NombreCompleto}"
+                               FontSize="13" FontWeight="SemiBold" Foreground="#4527A0"/>
+                    <TextBlock Text="{Binding ClienteInicial.NumeroDocumento}"
+                               FontSize="11" Foreground="#7E57C2"/>
+                </StackPanel>
+                <Button Grid.Column="2"
+                        Content="✕ Quitar"
+                        Padding="10,6" FontSize="12"
+                        Background="#FFEBEE" Foreground="#C62828"
+                        BorderThickness="1" BorderBrush="#EF9A9A"
+                        Cursor="Hand"
+                        Command="{Binding LimpiarCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#FFCDD2"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Botones inferiores -->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Content="➕ Nuevo Cliente"
+                    Padding="14,10" FontSize="13" FontWeight="SemiBold"
+                    Background="#4CAF50" Foreground="White"
+                    BorderThickness="0" Cursor="Hand"
+                    Command="{Binding AbrirNuevoClienteCommand}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="5"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#388E3C"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Grid.Column="2"
+                    Content="Cerrar"
+                    Padding="20,10" FontSize="13"
+                    Background="#EEEEEE" Foreground="#424242"
+                    BorderThickness="1" BorderBrush="#BDBDBD"
+                    Cursor="Hand" IsCancel="True">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E0E0E0"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+    </Grid>
+</Window>

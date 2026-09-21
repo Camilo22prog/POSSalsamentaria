@@ -1,0 +1,259 @@
+<Window x:Class="POS.UI.Views.Sales.RetiroCajaView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Sales"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=viewmodels:RetiroCajaViewModel}"
+        Title="Retiro de Caja"
+        Height="600"
+        Width="520"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F5F5F5">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="#FF9800"
+                CornerRadius="6"
+                Padding="15"
+                Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="💰 RETIRO DE CAJA"
+                           FontSize="20" FontWeight="Bold"
+                           Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Requiere autorización de supervisor o administrador"
+                           FontSize="11" Foreground="White"
+                           HorizontalAlignment="Center" Margin="0,4,0,0" Opacity="0.85"/>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- ── SECCIÓN: DATOS DEL RETIRO ── -->
+                <Border Background="White" CornerRadius="6" Padding="14"
+                        BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="DATOS DEL RETIRO"
+                                   FontSize="10" FontWeight="Bold" Foreground="#9E9E9E"
+                                   Margin="0,0,0,10"/>
+
+                        <!-- Monto -->
+                        <TextBlock Text="Monto del Retiro: *"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Border BorderBrush="#BDBDBD" BorderThickness="1" CornerRadius="4">
+                            <TextBox Text="{Binding Monto, UpdateSourceTrigger=PropertyChanged, StringFormat=N0}"
+                                     FontSize="22" FontWeight="Bold" Padding="10,8"
+                                     BorderThickness="0" Foreground="#E65100"/>
+                        </Border>
+
+                        <!-- Motivo -->
+                        <TextBlock Text="Motivo: *"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,14,0,5"/>
+                        <ComboBox ItemsSource="{Binding Motivos}"
+                                  SelectedValue="{Binding MotivoSeleccionado}"
+                                  FontSize="13" Padding="8,6">
+                        </ComboBox>
+
+                        <!-- Descripción (solo cuando Motivo = Otros) -->
+                        <StackPanel Visibility="{Binding EsOtros, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Border Background="#FFF8E1" CornerRadius="4" Padding="8,6" Margin="0,8,0,0">
+                                <TextBlock Text="⚠ Indique el motivo específico del retiro."
+                                           FontSize="11" Foreground="#E65100"/>
+                            </Border>
+                            <TextBlock Text="Descripción del motivo (obligatorio): *"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="#E65100" Margin="0,8,0,5"/>
+                            <Border BorderBrush="#FF9800" BorderThickness="2" CornerRadius="4">
+                                <TextBox x:Name="TxtDescripcionOtros"
+                                         Text="{Binding DescripcionOtros, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="13" Padding="8,6" BorderThickness="0"
+                                         Height="60" TextWrapping="Wrap"
+                                         AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                                         MaxLength="200"/>
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Observaciones -->
+                        <TextBlock Text="{Binding LabelObservaciones}"
+                                   FontSize="13" FontWeight="SemiBold" Margin="0,14,0,5"/>
+                        <Border BorderBrush="#BDBDBD" BorderThickness="1" CornerRadius="4">
+                            <TextBox Text="{Binding Observaciones, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="13" Padding="8,6" BorderThickness="0"
+                                     Height="55" TextWrapping="Wrap"
+                                     AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- ── SECCIÓN: AUTORIZACIÓN ── -->
+                <Border CornerRadius="6" Padding="14" BorderThickness="2" Margin="0,0,0,4">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Autorizado}" Value="True">
+                                    <Setter Property="Background" Value="#F1F8E9"/>
+                                    <Setter Property="BorderBrush" Value="#66BB6A"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                            <TextBlock Text="🔐 AUTORIZACIÓN DE SUPERVISOR"
+                                       FontSize="10" FontWeight="Bold" Foreground="#9E9E9E"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Autorizado OK -->
+                        <Border Background="#E8F5E9" CornerRadius="4" Padding="10,8"
+                                Visibility="{Binding Autorizado, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="✅" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <StackPanel>
+                                    <TextBlock Text="Retiro autorizado por:" FontSize="11" Foreground="#388E3C"/>
+                                    <TextBlock Text="{Binding SupervisorAutorizado}"
+                                               FontSize="14" FontWeight="Bold" Foreground="#2E7D32"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Formulario de autorización (cuando aún no está autorizado) -->
+                        <StackPanel Visibility="{Binding Autorizado, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <TextBlock Text="El supervisor o administrador debe ingresar sus credenciales para autorizar este retiro."
+                                       FontSize="11" Foreground="#757575" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                            <TextBlock Text="Usuario del supervisor:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                            <Border BorderBrush="#BDBDBD" BorderThickness="1" CornerRadius="4" Margin="0,0,0,10">
+                                <TextBox Text="{Binding UsuarioAutorizador, UpdateSourceTrigger=PropertyChanged}"
+                                         FontSize="13" Padding="8,6" BorderThickness="0"/>
+                            </Border>
+
+                            <TextBlock Text="Contraseña:" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                            <Border BorderBrush="#BDBDBD" BorderThickness="1" CornerRadius="4" Margin="0,0,0,12">
+                                <PasswordBox x:Name="PbPassword"
+                                             FontSize="13" Padding="8,6"
+                                             BorderThickness="0"
+                                             PasswordChanged="PbPassword_PasswordChanged"/>
+                            </Border>
+
+                            <Button Content="🔓 Verificar Autorización"
+                                    Command="{Binding ValidarSupervisorCommand}"
+                                    Padding="0,10" FontSize="13" FontWeight="SemiBold"
+                                    Background="#FF9800" Foreground="White"
+                                    BorderThickness="0" Cursor="Hand" HorizontalAlignment="Stretch">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="5"
+                                                            Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#F57C00"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Botones -->
+        <Grid Grid.Row="2" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Content="Cancelar"
+                    Padding="0,12" FontSize="14"
+                    Background="#FFEBEE" Foreground="#C62828"
+                    BorderThickness="1" BorderBrush="#EF9A9A"
+                    Cursor="Hand" Command="{Binding CancelarCommand}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#FFCDD2"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button Grid.Column="2" Content="✅ REGISTRAR RETIRO"
+                    Padding="0,12" FontSize="15" FontWeight="Bold"
+                    Foreground="White" BorderThickness="0" Cursor="Hand"
+                    Command="{Binding RegistrarCommand}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#9E9E9E"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="5"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Autorizado}" Value="True">
+                                <Setter Property="Background" Value="#FF9800"/>
+                            </DataTrigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F57C00"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </Grid>
+
+        <!-- Loading Overlay -->
+        <Border Grid.Row="0" Grid.RowSpan="3"
+                Background="#80000000"
+                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="⏳" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock Text="Procesando..." FontSize="16" Foreground="White" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

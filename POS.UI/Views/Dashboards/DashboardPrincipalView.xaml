@@ -1,0 +1,613 @@
+<UserControl x:Class="POS.UI.Views.Dashboards.DashboardPrincipalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Dashboards"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:DashboardPrincipalViewModel}"
+             d:DesignHeight="800"
+             d:DesignWidth="1400"
+             Background="#F5F5F5"
+             Loaded="UserControl_Loaded">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="📊 Dashboard Principal" 
+                              FontSize="28" 
+                              FontWeight="Bold"
+                              Foreground="#2C3E50"/>
+                    <TextBlock Text="Panel de control en tiempo real" 
+                            FontSize="13"
+                            Foreground="Gray"
+                            Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                       Content="🔄 Actualizar"
+                       Padding="20,10"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Background="#3498DB"
+                       Foreground="White"
+                       BorderThickness="0"
+                       Cursor="Hand"
+                       Command="{Binding CargarDashboardCommand}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                               CornerRadius="5"
+                                               Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#2980B9"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+
+            <!-- KPIs del día -->
+            <Grid Grid.Row="1" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Ventas Hoy -->
+                <Border Grid.Column="0" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Padding="20"
+                       Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                  Text="💰 Ventas Hoy" 
+                                  FontSize="14"
+                                  Foreground="Gray"
+                                  FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Row="1"
+                                  Text="{Binding Datos.VentasHoy, StringFormat=C}" 
+                                  FontSize="32"
+                                  FontWeight="Bold"
+                                  Foreground="#27AE60"
+                                  Margin="0,10,0,10"/>
+
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <TextBlock FontSize="12" FontWeight="SemiBold">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="#27AE60"/>
+                                        <Setter Property="Text" Value="↑"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Datos.CrecimientoVsAyer, Converter={StaticResource LessThanZeroConverter}}" Value="True">
+                                                <Setter Property="Foreground" Value="#E74C3C"/>
+                                                <Setter Property="Text" Value="↓"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                                <Run Text=" "/>
+                                <Run Text="{Binding Datos.CrecimientoVsAyer, StringFormat='{}{0:N1}%', Mode=OneWay}"/>
+                            </TextBlock>
+                            <TextBlock Text=" vs ayer" 
+                                      FontSize="12" 
+                                      Foreground="Gray"
+                                      Margin="5,0,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Transacciones -->
+                <Border Grid.Column="1" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Padding="20"
+                       Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                  Text="🛒 Transacciones" 
+                                  FontSize="14"
+                                  Foreground="Gray"
+                                  FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Row="1"
+                                  Text="{Binding Datos.TransaccionesHoy}" 
+                                  FontSize="32"
+                                  FontWeight="Bold"
+                                  Foreground="#3498DB"
+                                  Margin="0,10,0,10"/>
+
+                        <TextBlock Grid.Row="2"
+                                  Text="operaciones hoy" 
+                                  FontSize="12" 
+                                  Foreground="Gray"/>
+                    </Grid>
+                </Border>
+
+                <!-- Ticket Promedio -->
+                <Border Grid.Column="2" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Padding="20"
+                       Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                  Text="🧾 Ticket Promedio" 
+                                  FontSize="14"
+                                  Foreground="Gray"
+                                  FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Row="1"
+                                  Text="{Binding Datos.TicketPromedio, StringFormat=C}" 
+                                  FontSize="32"
+                                  FontWeight="Bold"
+                                  Foreground="#9B59B6"
+                                  Margin="0,10,0,10"/>
+
+                        <TextBlock Grid.Row="2"
+                                  Text="por transacción" 
+                                  FontSize="12" 
+                                  Foreground="Gray"/>
+                    </Grid>
+                </Border>
+
+                <!-- Estado Caja -->
+                <Border Grid.Column="3" 
+                       CornerRadius="10"
+                       Padding="20">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="#E8F5E9"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Datos.CajaAbierta}" Value="False">
+                                    <Setter Property="Background" Value="#FFEBEE"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                  Text="💼 Estado de Caja"
+                                  FontSize="14"
+                                  Foreground="#37474F"
+                                  FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Row="1"
+                                  FontSize="24"
+                                  FontWeight="Bold"
+                                  Margin="0,10,0,10">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="✅ ABIERTA"/>
+                                    <Setter Property="Foreground" Value="#27AE60"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Datos.CajaAbierta}" Value="False">
+                                            <Setter Property="Text" Value="🔒 CERRADA"/>
+                                            <Setter Property="Foreground" Value="#E74C3C"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <TextBlock Grid.Row="2"
+                                  Text="{Binding Datos.UsuarioCaja}" 
+                                  FontSize="12" 
+                                  Foreground="Gray"
+                                  FontWeight="SemiBold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Datos.CajaAbierta}" Value="False">
+                                            <Setter Property="Text" Value="Sin usuario asignado"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Gráfico de Ventas + Alertas -->
+            <Grid Grid.Row="2" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Gráfico de Ventas Semanales -->
+                <Border Grid.Column="0" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Padding="20"
+                       Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                  Text="📈 Ventas Últimos 7 Días" 
+                                  FontSize="16"
+                                  FontWeight="Bold"
+                                  Foreground="#2C3E50"
+                                  Margin="0,0,0,15"/>
+
+                        <lvc:CartesianChart Grid.Row="1"
+                                          Series="{Binding SeriesVentasSemanales}"
+                                          XAxes="{Binding AxisXVentasSemanales}"
+                                          Height="250">
+                        </lvc:CartesianChart>
+                    </Grid>
+                </Border>
+
+                <!-- Alertas -->
+                <Border Grid.Column="1" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Padding="20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="⚠️ Alertas" 
+                                  FontSize="16"
+                                  FontWeight="Bold"
+                                  Foreground="#2C3E50"
+                                  Margin="0,0,0,15"/>
+
+                        <!-- Stock Bajo -->
+                        <Border Background="#FFF3E0"
+                               CornerRadius="8"
+                               Padding="15"
+                               Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                          Text="📦" 
+                                          FontSize="24"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,10,0"/>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Stock Bajo"
+                                              FontSize="12"
+                                              Foreground="#4E342E"
+                                              FontWeight="SemiBold"/>
+                                    <TextBlock Text="Productos críticos"
+                                              FontSize="11"
+                                              Foreground="#6D4C41"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Column="2"
+                                          Text="{Binding Datos.ProductosStockBajo}" 
+                                          FontSize="24"
+                                          FontWeight="Bold"
+                                          Foreground="#F57C00"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Ventas Anuladas -->
+                        <Border Background="#FFEBEE"
+                               CornerRadius="8"
+                               Padding="15">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                          Text="🔄" 
+                                          FontSize="24"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,10,0"/>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Anuladas Hoy"
+                                              FontSize="12"
+                                              Foreground="#B71C1C"
+                                              FontWeight="SemiBold"/>
+                                    <TextBlock Text="Ventas canceladas"
+                                              FontSize="11"
+                                              Foreground="#C62828"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Column="2"
+                                          Text="{Binding Datos.VentasAnuladasHoy}" 
+                                          FontSize="24"
+                                          FontWeight="Bold"
+                                          Foreground="#E74C3C"
+                                          VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Top 5 Productos + Resumen Semanal/Mensual -->
+            <Grid Grid.Row="3" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Top 5 Productos -->
+                <Border Grid.Column="0" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Padding="20"
+                       Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="🏆 Top 5 Productos Hoy" 
+                                  FontSize="16"
+                                  FontWeight="Bold"
+                                  Foreground="#2C3E50"
+                                  Margin="0,0,0,15"/>
+
+                        <ItemsControl ItemsSource="{Binding Datos.TopProductos}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#F8F9FA"
+                                           CornerRadius="5"
+                                           Padding="15,10"
+                                           Margin="0,0,0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0"
+                                                      Text="{Binding Nombre}" 
+                                                      FontSize="13"
+                                                      FontWeight="SemiBold"
+                                                      VerticalAlignment="Center"
+                                                      TextTrimming="CharacterEllipsis"/>
+
+                                            <StackPanel Grid.Column="1" 
+                                                       Orientation="Horizontal"
+                                                       Margin="10,0,10,0"
+                                                       VerticalAlignment="Center">
+                                                <TextBlock Text="📦" FontSize="12" Margin="0,0,5,0"/>
+                                                <TextBlock Text="{Binding CantidadVendida}" 
+                                                          FontSize="12"
+                                                          Foreground="Gray"/>
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Column="2"
+                                                      Text="{Binding Total, StringFormat=C}" 
+                                                      FontSize="14"
+                                                      FontWeight="Bold"
+                                                      Foreground="#27AE60"
+                                                      VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Resumen Semanal/Mensual -->
+                <Border Grid.Column="1" 
+                       Background="White" 
+                       CornerRadius="10"
+                       Padding="20">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="📅 Resumen de Períodos" 
+                                  FontSize="16"
+                                  FontWeight="Bold"
+                                  Foreground="#2C3E50"
+                                  Margin="0,0,0,15"/>
+
+                        <!-- Semana -->
+                        <Border Background="#E3F2FD"
+                               CornerRadius="8"
+                               Padding="15"
+                               Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0"
+                                          Text="Esta Semana"
+                                          FontSize="12"
+                                          Foreground="#1565C0"
+                                          FontWeight="SemiBold"/>
+
+                                <TextBlock Grid.Row="1"
+                                          Text="{Binding Datos.VentasSemana, StringFormat=C}" 
+                                          FontSize="24"
+                                          FontWeight="Bold"
+                                          Foreground="#1976D2"
+                                          Margin="0,5,0,5"/>
+
+                                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                    <TextBlock FontSize="11" FontWeight="SemiBold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#27AE60"/>
+                                                <Setter Property="Text" Value="↑"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Datos.CrecimientoSemanal, Converter={StaticResource LessThanZeroConverter}}" Value="True">
+                                                        <Setter Property="Foreground" Value="#E74C3C"/>
+                                                        <Setter Property="Text" Value="↓"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                        <Run Text=" "/>
+                                        <Run Text="{Binding Datos.CrecimientoSemanal, StringFormat='{}{0:N1}%', Mode=OneWay}"/>
+                                    </TextBlock>
+                                    <TextBlock Text=" vs semana anterior"
+                                              FontSize="11"
+                                              Foreground="#1565C0"
+                                              Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Mes -->
+                        <Border Background="#F3E5F5"
+                               CornerRadius="8"
+                               Padding="15">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0"
+                                          Text="Este Mes"
+                                          FontSize="12"
+                                          Foreground="#6A1B9A"
+                                          FontWeight="SemiBold"/>
+
+                                <TextBlock Grid.Row="1"
+                                          Text="{Binding Datos.VentasMes, StringFormat=C}" 
+                                          FontSize="24"
+                                          FontWeight="Bold"
+                                          Foreground="#7B1FA2"
+                                          Margin="0,5,0,5"/>
+
+                                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                    <TextBlock FontSize="11" FontWeight="SemiBold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#27AE60"/>
+                                                <Setter Property="Text" Value="↑"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Datos.CrecimientoMensual, Converter={StaticResource LessThanZeroConverter}}" Value="True">
+                                                        <Setter Property="Foreground" Value="#E74C3C"/>
+                                                        <Setter Property="Text" Value="↓"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                        <Run Text=" "/>
+                                        <Run Text="{Binding Datos.CrecimientoMensual, StringFormat='{}{0:N1}%', Mode=OneWay}"/>
+                                    </TextBlock>
+                                    <TextBlock Text=" vs mes anterior"
+                                              FontSize="11"
+                                              Foreground="#6A1B9A"
+                                              Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Loading Overlay -->
+            <Border Grid.Row="0"
+                   Grid.RowSpan="4"
+                   Background="#80FFFFFF"
+                   CornerRadius="10"
+                   Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel VerticalAlignment="Center" 
+                           HorizontalAlignment="Center">
+                    <TextBlock Text="⏳"
+                              FontSize="48"
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,10"/>
+                    <TextBlock Text="Cargando dashboard..."
+                              FontSize="18"
+                              Foreground="#2C3E50"
+                              FontWeight="SemiBold"
+                              HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

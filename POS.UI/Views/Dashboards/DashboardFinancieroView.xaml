@@ -1,0 +1,282 @@
+<UserControl x:Class="POS.UI.Views.Dashboards.DashboardFinancieroView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Dashboards"
+             xmlns:converters="clr-namespace:POS.UI.Converters"
+             xmlns:helpers="clr-namespace:POS.UI.Helpers"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:DashboardFinancieroViewModel}"
+             d:DesignHeight="900" d:DesignWidth="1400"
+             Background="#F5F5F5"
+             Loaded="UserControl_Loaded">
+
+    <UserControl.Resources>
+        <converters:LessThanZeroConverter x:Key="LessThanZeroConverter"/>
+        <helpers:BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style x:Key="KpiCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="20"/>
+        </Style>
+
+        <Style x:Key="CostoCard" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="20"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- Loading overlay -->
+        <Border Panel.ZIndex="99"
+                Background="#80FFFFFF"
+                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="⏳ Cargando..." FontSize="18" FontWeight="Bold" Foreground="#9B59B6"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- ─── Encabezado ───────────────────────────────────────────── -->
+                <Grid Grid.Row="0" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="💼 Dashboard Financiero"
+                                   FontSize="24" FontWeight="Bold" Foreground="#2C3E50"/>
+                        <TextBlock Text="Ingresos, costos, utilidad y proyecciones del mes"
+                                   FontSize="12" Foreground="Gray" Margin="0,4,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="🔄 Actualizar"
+                            Command="{Binding CargarDashboardCommand}"
+                            Padding="18,10" FontSize="13" FontWeight="SemiBold"
+                            Background="#9B59B6" Foreground="White" BorderThickness="0" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+
+                <!-- ─── KPIs financieros ──────────────────────────────────────── -->
+                <Grid Grid.Row="1" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Ingresos -->
+                    <Border Grid.Column="0" Style="{StaticResource KpiCard}" Margin="0,0,10,0">
+                        <Border.Effect><DropShadowEffect Color="#000" Opacity="0.08" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="💰 Ingresos del mes"
+                                       FontSize="13" Foreground="Gray" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding Datos.IngresosDelMes, StringFormat=C}"
+                                       FontSize="26" FontWeight="Bold" Foreground="#27AE60" Margin="0,8,0,8"/>
+                            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                <TextBlock FontSize="12" FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#27AE60"/>
+                                            <Setter Property="Text" Value="↑ "/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Datos.CrecimientoVsMesAnterior, Converter={StaticResource LessThanZeroConverter}}" Value="True">
+                                                    <Setter Property="Foreground" Value="#E74C3C"/>
+                                                    <Setter Property="Text" Value="↓ "/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock FontSize="12" FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="#27AE60"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Datos.CrecimientoVsMesAnterior, Converter={StaticResource LessThanZeroConverter}}" Value="True">
+                                                    <Setter Property="Foreground" Value="#E74C3C"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                    <Run Text="{Binding Datos.CrecimientoVsMesAnterior, StringFormat='{}{0:N1}%', Mode=OneWay}"/>
+                                </TextBlock>
+                                <TextBlock Text=" vs mes anterior" FontSize="12" Foreground="Gray" Margin="4,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Costo -->
+                    <Border Grid.Column="1" Style="{StaticResource KpiCard}" Margin="0,0,10,0">
+                        <Border.Effect><DropShadowEffect Color="#000" Opacity="0.08" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="📦 Costo de ventas" FontSize="13" Foreground="Gray" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Datos.CostoProductosVendidos, StringFormat=C}"
+                                       FontSize="26" FontWeight="Bold" Foreground="#E74C3C" Margin="0,8,0,8"/>
+                            <TextBlock Text="costo directo de productos" FontSize="12" Foreground="Gray"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Utilidad bruta -->
+                    <Border Grid.Column="2" Style="{StaticResource KpiCard}" Margin="0,0,10,0">
+                        <Border.Effect><DropShadowEffect Color="#000" Opacity="0.08" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="📈 Utilidad bruta" FontSize="13" Foreground="Gray" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Datos.UtilidadBruta, StringFormat=C}"
+                                       FontSize="26" FontWeight="Bold" Foreground="#3498DB" Margin="0,8,0,8"/>
+                            <TextBlock Text="ingresos menos costo de ventas" FontSize="12" Foreground="Gray"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Margen bruto -->
+                    <Border Grid.Column="3" Style="{StaticResource KpiCard}">
+                        <Border.Effect><DropShadowEffect Color="#000" Opacity="0.08" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="% Margen bruto" FontSize="13" Foreground="Gray" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Datos.MargenBruto, StringFormat='{}{0:N1}%'}"
+                                       FontSize="26" FontWeight="Bold" Foreground="#9B59B6" Margin="0,8,0,8"/>
+                            <TextBlock Text="utilidad / ingresos × 100" FontSize="12" Foreground="Gray"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ─── Gráfico tendencia + Proyección ────────────────────────── -->
+                <Grid Grid.Row="2" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Tendencia mensual -->
+                    <Border Grid.Column="0" Background="White" CornerRadius="10" Padding="20" Margin="0,0,10,0">
+                        <Border.Effect><DropShadowEffect Color="#000" Opacity="0.08" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="260"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="📈 Ventas diarias del mes"
+                                       FontSize="15" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,12"/>
+                            <lvc:CartesianChart Grid.Row="1"
+                                               Series="{Binding SeriesVentas}"
+                                               XAxes="{Binding AxisXVentas}"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Proyección -->
+                    <StackPanel Grid.Column="1">
+                        <!-- Proyección card -->
+                        <Border Background="#EBF5FB" CornerRadius="10" Padding="20" Margin="0,0,0,10">
+                            <Border.Effect><DropShadowEffect Color="#000" Opacity="0.08" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="🔮 Proyección del mes" FontSize="13" FontWeight="Bold" Foreground="#2980B9"/>
+                                <TextBlock Text="{Binding Datos.ProyeccionMes, StringFormat=C}"
+                                           FontSize="24" FontWeight="Bold" Foreground="#2980B9" Margin="0,10,0,6"/>
+                                <TextBlock Text="basado en promedio diario actual" FontSize="11" Foreground="#5D6D7E"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Mes anterior -->
+                        <Border Background="#F8F9FA" CornerRadius="10" Padding="20">
+                            <Border.Effect><DropShadowEffect Color="#000" Opacity="0.08" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                            <StackPanel>
+                                <TextBlock Text="📅 Mes anterior" FontSize="13" FontWeight="Bold" Foreground="#7F8C8D"/>
+                                <TextBlock Text="{Binding Datos.VentasMesAnterior, StringFormat=C}"
+                                           FontSize="24" FontWeight="Bold" Foreground="#7F8C8D" Margin="0,10,0,6"/>
+                                <TextBlock Text="total vendido el mes pasado" FontSize="11" Foreground="Gray"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ─── Desglose de costos ────────────────────────────────────── -->
+                <Border Grid.Row="3" Background="White" CornerRadius="10" Padding="20">
+                    <Border.Effect><DropShadowEffect Color="#000" Opacity="0.08" BlurRadius="10" ShadowDepth="2"/></Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="💸 Desglose de costos y gastos del mes"
+                                   FontSize="15" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,16"/>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Costo productos -->
+                            <Border Grid.Column="0" Background="#FFEBEE" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="📦 Costo de productos" FontSize="12" Foreground="#C0392B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Datos.CostoProductosVendidos, StringFormat=C}"
+                                               FontSize="20" FontWeight="Bold" Foreground="#C0392B" Margin="0,6,0,4"/>
+                                    <TextBlock Text="según detalles de venta" FontSize="11" Foreground="#E74C3C"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Compras proveedores -->
+                            <Border Grid.Column="1" Background="#FFF3E0" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="🛒 Compras a proveedores" FontSize="12" Foreground="#E65100" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Datos.ComprasDelMes, StringFormat=C}"
+                                               FontSize="20" FontWeight="Bold" Foreground="#E65100" Margin="0,6,0,4"/>
+                                    <TextBlock Text="facturas del mes" FontSize="11" Foreground="#E67E22"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Mermas -->
+                            <Border Grid.Column="2" Background="#FCE4EC" CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="🗑️ Mermas registradas" FontSize="12" Foreground="#AD1457" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Datos.MermasDelMes, StringFormat=C}"
+                                               FontSize="20" FontWeight="Bold" Foreground="#AD1457" Margin="0,6,0,4"/>
+                                    <TextBlock Text="pérdidas y vencidos" FontSize="11" Foreground="#E91E63"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Gastos operativos -->
+                            <Border Grid.Column="3" Background="#F3E5F5" CornerRadius="8" Padding="16">
+                                <StackPanel>
+                                    <TextBlock Text="💼 Gastos operativos" FontSize="12" Foreground="#6A1B9A" FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Datos.GastosOperativosDelMes, StringFormat=C}"
+                                               FontSize="20" FontWeight="Bold" Foreground="#6A1B9A" Margin="0,6,0,4"/>
+                                    <TextBlock Text="administración y servicios" FontSize="11" Foreground="#9B59B6"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

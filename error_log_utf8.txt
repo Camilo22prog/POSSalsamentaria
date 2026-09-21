@@ -1,0 +1,28 @@
+﻿info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\juanm\OneDrive\Documentos\POSSalsamentaria
+warn: Microsoft.EntityFrameworkCore.Model.Validation[10625]
+      The foreign key property 'Caja.UsuarioId1' was created in shadow state because a conflicting property with the simple name 'UsuarioId' exists in the entity type, but is either not mapped, is already used for another relationship, or is incompatible with the associated primary key type. See https://aka.ms/efcore-relationships for information on mapping relationships in EF Core.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (92ms) [Parameters=[@__nombreUsuario_0='?' (Size = 50)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Bloqueado], [u].[CreadoPorId], [u].[Email], [u].[Estado], [u].[FechaCreacion], [u].[FechaModificacion], [u].[IntentosFailidos], [u].[ModificadoPorId], [u].[NombreCompleto], [u].[NombreUsuario], [u].[PasswordHash], [u].[RolId], [u].[Telefono], [u].[UltimoAcceso], [r].[Id], [r].[Descripcion], [r].[Estado], [r].[FechaCreacion], [r].[FechaModificacion], [r].[LimiteDescuento], [r].[Nombre], [r].[PuedeAjustarInventario], [r].[PuedeAnularVentas], [r].[PuedeAplicarDescuentos], [r].[PuedeGestionarProductos], [r].[PuedeGestionarUsuarios], [r].[PuedeVerCostos], [r].[PuedeVerReportes]
+      FROM [Usuarios] AS [u]
+      INNER JOIN [Roles] AS [r] ON [u].[RolId] = [r].[Id]
+      WHERE [u].[NombreUsuario] = @__nombreUsuario_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@p1='?' (DbType = Int32), @p0='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [Usuarios] SET [UltimoAcceso] = @p0
+      OUTPUT 1
+      WHERE [Id] = @p1;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@p0='?' (Size = 50), @p1='?' (Size = 45), @p2='?' (DbType = DateTime2), @p3='?' (Size = 4000), @p4='?' (DbType = Int32), @p5='?' (Size = 50), @p6='?' (DbType = Int32), @p7='?' (Size = 4000), @p8='?' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      INSERT INTO [Auditorias] ([Accion], [DireccionIP], [Fecha], [Motivo], [RegistroId], [Tabla], [UsuarioId], [ValoresAnteriores], [ValoresNuevos])
+      OUTPUT INSERTED.[Id]
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8);

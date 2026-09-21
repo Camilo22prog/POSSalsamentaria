@@ -1,0 +1,282 @@
+<UserControl x:Class="POS.UI.Views.Customers.ClientesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Customers"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ClientesViewModel}"
+             d:DesignHeight="600"
+             d:DesignWidth="1000"
+             Background="White">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#673AB7" 
+                Padding="20">
+            <Grid>
+                <TextBlock Text="👥 GESTIÓN DE CLIENTES"
+                          FontSize="24"
+                          FontWeight="Bold"
+                          Foreground="White"
+                          VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Barra de herramientas -->
+        <Border Grid.Row="1" 
+                Background="#F5F5F5" 
+                BorderBrush="#E0E0E0" 
+                BorderThickness="0,0,0,1"
+                Padding="20,15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Búsqueda -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBox Text="{Binding TerminoBusqueda, UpdateSourceTrigger=PropertyChanged}"
+                            Width="300"
+                            Padding="10,8"
+                            FontSize="14"
+                            VerticalContentAlignment="Center"
+                            Margin="0,0,10,0">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding BuscarCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button Content="🔍 Buscar"
+                           Command="{Binding BuscarCommand}"
+                           Padding="15,8"
+                           FontSize="14"
+                           Background="#2196F3"
+                           Foreground="White"
+                           BorderThickness="0"
+                           Cursor="Hand"
+                           Margin="0,0,10,0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                   CornerRadius="5"
+                                                   Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#1976D2"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="↻ Recargar"
+                           Command="{Binding CargarClientesCommand}"
+                           Padding="15,8"
+                           FontSize="14"
+                           Background="#9E9E9E"
+                           Foreground="White"
+                           BorderThickness="0"
+                           Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                   CornerRadius="5"
+                                                   Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#757575"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+
+                <!-- Botones de acción -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="➕ Nuevo Cliente"
+                           Command="{Binding NuevoClienteCommand}"
+                           Padding="15,8"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           Background="#4CAF50"
+                           Foreground="White"
+                           BorderThickness="0"
+                           Cursor="Hand"
+                           Margin="0,0,10,0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                   CornerRadius="5"
+                                                   Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#388E3C"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="✏️ Editar"
+                           Command="{Binding EditarClienteCommand}"
+                           Padding="15,8"
+                           FontSize="14"
+                           Background="#FF9800"
+                           Foreground="White"
+                           BorderThickness="0"
+                           Cursor="Hand"
+                           Margin="0,0,10,0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                   CornerRadius="5"
+                                                   Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F57C00"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="🗑️ Eliminar"
+                           Command="{Binding EliminarClienteCommand}"
+                           Padding="15,8"
+                           FontSize="14"
+                           Background="#F44336"
+                           Foreground="White"
+                           BorderThickness="0"
+                           Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                   CornerRadius="5"
+                                                   Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#D32F2F"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Lista de clientes -->
+        <DataGrid Grid.Row="2"
+                 ItemsSource="{Binding Clientes}"
+                 SelectedItem="{Binding ClienteSeleccionado}"
+                 AutoGenerateColumns="False"
+                 IsReadOnly="True"
+                 SelectionMode="Single"
+                 CanUserAddRows="False"
+                 CanUserDeleteRows="False"
+                 GridLinesVisibility="Horizontal"
+                 HeadersVisibility="Column"
+                 RowHeight="40"
+                 FontSize="13"
+                 AlternatingRowBackground="#F9F9F9"
+                 Margin="20">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Documento" 
+                                   Binding="{Binding NumeroDocumento}" 
+                                   Width="120"/>
+                <DataGridTextColumn Header="Nombre/Razón Social" 
+                                   Binding="{Binding NombreCompleto}" 
+                                   Width="*"/>
+                <DataGridTextColumn Header="Email" 
+                                   Binding="{Binding Email}" 
+                                   Width="200"/>
+                <DataGridTextColumn Header="Teléfono" 
+                                   Binding="{Binding Telefono}" 
+                                   Width="120"/>
+                <DataGridTextColumn Header="Ciudad" 
+                                   Binding="{Binding Ciudad}" 
+                                   Width="150"/>
+                <DataGridTextColumn Header="Total Compras" 
+                                   Binding="{Binding MontoTotalCompras, StringFormat=C}" 
+                                   Width="120"/>
+            </DataGrid.Columns>
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="#673AB7"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="Padding" Value="10,8"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+        </DataGrid>
+
+        <!-- Loading Overlay -->
+        <Border Grid.Row="0"
+                Grid.RowSpan="3"
+                Background="#80000000"
+                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="⏳"
+                          FontSize="48"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,10"/>
+                <TextBlock Text="Cargando..."
+                          FontSize="18"
+                          Foreground="White"
+                          HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

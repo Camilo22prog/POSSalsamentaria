@@ -1,0 +1,11 @@
+{
+    "dotnet.defaultSolution": "POSSalsamentaria.sln",
+    "omnisharp.useModernNet": true,
+    "dotnet.server.useOmnisharp": false,
+    "dotnetAcquisitionExtension.existingDotnetPath": [
+        {
+            "extensionId": "ms-dotnettools.csdevkit",
+            "path": "C:\\Program Files\\dotnet\\dotnet.exe"
+        }
+    ]
+}

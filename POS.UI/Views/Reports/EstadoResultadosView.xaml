@@ -1,0 +1,599 @@
+<UserControl x:Class="POS.UI.Views.Reports.EstadoResultadosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Reports"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:EstadoResultadosViewModel}"
+             d:DesignHeight="800"
+             d:DesignWidth="1000"
+             Background="White">
+
+    <UserControl.Resources>
+
+        <!-- Estilo para el tooltip financiero -->
+        <Style x:Key="FinancialTooltipStyle" TargetType="ToolTip">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HasDropShadow" Value="True"/>
+        </Style>
+
+        <!-- Plantilla reutilizable de tooltip -->
+        <DataTemplate x:Key="TooltipTemplate">
+            <!-- Se usa directamente inline en cada control -->
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ── Header ────────────────────────────────────────────────────── -->
+        <Border Grid.Row="0" Background="#388E3C" Padding="20">
+            <TextBlock>
+                <Run Text="💵" FontSize="24"/>
+                <Run Text=" ESTADO DE RESULTADOS"
+                     FontSize="20" FontWeight="Bold" Foreground="White"/>
+            </TextBlock>
+        </Border>
+
+        <!-- ── Filtros ───────────────────────────────────────────────────── -->
+        <Border Grid.Row="1"
+                Background="#F5F5F5"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1"
+                Padding="20">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Fecha Inicio:"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0"
+                           FontWeight="SemiBold"/>
+                <DatePicker SelectedDate="{Binding FechaInicio, Mode=TwoWay}"
+                            Width="140"
+                            Margin="0,0,20,0"/>
+
+                <TextBlock Text="Fecha Fin:"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0"
+                           FontWeight="SemiBold"/>
+                <DatePicker SelectedDate="{Binding FechaFin, Mode=TwoWay}"
+                            Width="140"
+                            Margin="0,0,20,0"/>
+
+                <Button Content="🔍 Generar Reporte"
+                        Padding="20,10"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Background="#388E3C"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Command="{Binding GenerarReporteCommand}"/>
+
+                <Button Content="📥 Exportar Excel"
+                        Padding="20,10"
+                        Margin="10,0,0,0"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Background="#FF9800"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Command="{Binding ExportarExcelCommand}"/>
+
+                <!-- Rangos rápidos -->
+                <TextBlock Text="Rangos:"
+                           VerticalAlignment="Center"
+                           Margin="30,0,10,0"
+                           FontWeight="SemiBold"
+                           Foreground="Gray"/>
+
+                <Button Content="Mes"
+                        Command="{Binding EstablecerRangoRapidoCommand}"
+                        CommandParameter="Mes"
+                        Padding="10,5" Margin="0,0,5,0"
+                        FontSize="11" Background="#E3F2FD" BorderThickness="0" Cursor="Hand"/>
+
+                <Button Content="Mes Anterior"
+                        Command="{Binding EstablecerRangoRapidoCommand}"
+                        CommandParameter="MesAnterior"
+                        Padding="10,5" Margin="0,0,5,0"
+                        FontSize="11" Background="#E3F2FD" BorderThickness="0" Cursor="Hand"/>
+
+                <Button Content="Trimestre"
+                        Command="{Binding EstablecerRangoRapidoCommand}"
+                        CommandParameter="Trimestre"
+                        Padding="10,5" Margin="0,0,5,0"
+                        FontSize="11" Background="#E3F2FD" BorderThickness="0" Cursor="Hand"/>
+
+                <Button Content="Año"
+                        Command="{Binding EstablecerRangoRapidoCommand}"
+                        CommandParameter="Año"
+                        Padding="10,5"
+                        FontSize="11" Background="#E3F2FD" BorderThickness="0" Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ── Contenido ─────────────────────────────────────────────────── -->
+        <ScrollViewer Grid.Row="2"
+                      VerticalScrollBarVisibility="Auto"
+                      Margin="40,30">
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding EstadoResultados}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+
+            <Border Background="White"
+                    BorderBrush="#E0E0E0"
+                    BorderThickness="1"
+                    CornerRadius="5"
+                    Padding="40">
+                <StackPanel>
+
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <!-- SECCIÓN 1 · INGRESOS                                 -->
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <Border Background="#388E3C" CornerRadius="4" Padding="12,8" Margin="0,0,0,12">
+                        <TextBlock Text="1 · INGRESOS" FontSize="15" FontWeight="Bold" Foreground="White"/>
+                    </Border>
+
+                    <!-- Ventas Brutas -->
+                    <Grid Margin="20,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Cursor="Help">
+                            <TextBlock.Text>Ventas Brutas</TextBlock.Text>
+                            <TextBlock.ToolTip>
+                                <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                    <Border Background="#1B5E20" Padding="14" CornerRadius="6" MaxWidth="340">
+                                        <StackPanel>
+                                            <TextBlock Text="📊 Ventas Brutas" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                            <TextBlock Text="Fórmula: Σ Total de todas las ventas completadas (no anuladas) en el período."
+                                                       Foreground="#C8E6C9" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                            <TextBlock Text="Es el punto de partida: el valor total facturado antes de cualquier deducción."
+                                                       Foreground="#A5D6A7" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.VentasBrutas, StringFormat=C}"
+                                   FontSize="14" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <!-- Devoluciones -->
+                    <Grid Margin="20,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Foreground="#C62828" Cursor="Help">
+                            <TextBlock.Text>(−) Devoluciones / Anulaciones</TextBlock.Text>
+                            <TextBlock.ToolTip>
+                                <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                    <Border Background="#B71C1C" Padding="14" CornerRadius="6" MaxWidth="340">
+                                        <StackPanel>
+                                            <TextBlock Text="↩ Devoluciones / Anulaciones" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                            <TextBlock Text="Fórmula: Σ Total de ventas que fueron anuladas en el período."
+                                                       Foreground="#FFCDD2" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                            <TextBlock Text="Representan ventas que no se concretaron. Se restan del ingreso porque el dinero fue devuelto o la transacción fue cancelada."
+                                                       Foreground="#EF9A9A" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.Devoluciones, StringFormat=C}"
+                                   FontSize="14" Foreground="#C62828" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <!-- Descuentos -->
+                    <Grid Margin="20,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Foreground="#C62828" Cursor="Help">
+                            <TextBlock.Text>(−) Descuentos Otorgados</TextBlock.Text>
+                            <TextBlock.ToolTip>
+                                <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                    <Border Background="#B71C1C" Padding="14" CornerRadius="6" MaxWidth="340">
+                                        <StackPanel>
+                                            <TextBlock Text="🏷 Descuentos Otorgados" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                            <TextBlock Text="Fórmula: Σ Descuentos aplicados en ventas no anuladas."
+                                                       Foreground="#FFCDD2" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                            <TextBlock Text="Reducen el ingreso real. Un descuento alto puede señalar: estrategia de fidelización, presión competitiva, o exceso de inventario."
+                                                       Foreground="#EF9A9A" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.Descuentos, StringFormat=C}"
+                                   FontSize="14" Foreground="#C62828" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <Border BorderBrush="#BDBDBD" BorderThickness="0,1,0,0" Margin="0,4,0,4"/>
+
+                    <!-- Ventas Netas -->
+                    <Grid Margin="0,0,0,24" Cursor="Help">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.ToolTip>
+                            <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                <Border Background="#1B5E20" Padding="14" CornerRadius="6" MaxWidth="360">
+                                    <StackPanel>
+                                        <TextBlock Text="✅ Ventas Netas (Ingresos Netos)" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                        <TextBlock Text="Fórmula: Ventas Brutas − Devoluciones − Descuentos"
+                                                   Foreground="#C8E6C9" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                        <TextBlock Text="Es el ingreso real que genera el negocio. Todos los indicadores de margen se calculan sobre esta cifra. Un dato clave para evaluar la salud comercial."
+                                                   Foreground="#A5D6A7" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </ToolTip>
+                        </Grid.ToolTip>
+                        <TextBlock Grid.Column="0" Text="= VENTAS NETAS"
+                                   FontSize="16" FontWeight="Bold" Foreground="#2E7D32"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.VentasNetas, StringFormat=C}"
+                                   FontSize="16" FontWeight="Bold" Foreground="#2E7D32"
+                                   HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <!-- SECCIÓN 2 · COSTO DE VENTAS                          -->
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <Border Background="#E65100" CornerRadius="4" Padding="12,8" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="2 · COSTO DE VENTAS" FontSize="15" FontWeight="Bold" Foreground="White"/>
+                            <TextBlock Text="método de inventario perpetuo — costo registrado en cada venta"
+                                       FontSize="10" Foreground="#FFCCBC"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Costo de Productos Vendidos -->
+                    <Grid Margin="20,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Cursor="Help">
+                            <TextBlock.Text>Costo de Productos Vendidos (CPV)</TextBlock.Text>
+                            <TextBlock.ToolTip>
+                                <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                    <Border Background="#BF360C" Padding="14" CornerRadius="6" MaxWidth="360">
+                                        <StackPanel>
+                                            <TextBlock Text="📦 Costo de Productos Vendidos (CPV)" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                            <TextBlock Text="Fórmula: Σ (CostoUnitario × Cantidad) de cada artículo vendido."
+                                                       Foreground="#FFCCBC" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                            <TextBlock Text="El sistema usa inventario perpetuo: registra el costo al momento de cada venta. Esto es más preciso que el método periódico porque no depende de conteos físicos."
+                                                       Foreground="#FFAB91" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.CostoProductosVendidos, StringFormat=C}"
+                                   FontSize="14" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <!-- Mermas -->
+                    <Grid Margin="20,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Foreground="#C62828" Cursor="Help">
+                            <TextBlock.Text>(+) Mermas del Período</TextBlock.Text>
+                            <TextBlock.ToolTip>
+                                <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                    <Border Background="#B71C1C" Padding="14" CornerRadius="6" MaxWidth="360">
+                                        <StackPanel>
+                                            <TextBlock Text="⚠ Mermas del Período" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                            <TextBlock Text="Fórmula: Σ CostoTotal de mermas registradas en el período (vencidos, daños, robos)."
+                                                       Foreground="#FFCDD2" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                            <TextBlock Text="Las mermas son inventario que se pierde sin generar ingresos. Se suman al costo porque representan dinero ya invertido que no se recupera. En una salsamentaria, controlar este número es crítico."
+                                                       Foreground="#EF9A9A" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.MermasDelPeriodo, StringFormat=C}"
+                                   FontSize="14" Foreground="#C62828" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <Border BorderBrush="#BDBDBD" BorderThickness="0,1,0,0" Margin="0,4,0,4"/>
+
+                    <!-- Total Costo de Ventas -->
+                    <Grid Margin="0,0,0,24" Cursor="Help">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.ToolTip>
+                            <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                <Border Background="#BF360C" Padding="14" CornerRadius="6" MaxWidth="360">
+                                    <StackPanel>
+                                        <TextBlock Text="= Total Costo de Ventas" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                        <TextBlock Text="Fórmula: CPV + Mermas"
+                                                   Foreground="#FFCCBC" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                        <TextBlock Text="Todo lo que costó vender: el costo de los productos más las pérdidas por merma. Este total se resta de las Ventas Netas para obtener la Utilidad Bruta."
+                                                   Foreground="#FFAB91" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </ToolTip>
+                        </Grid.ToolTip>
+                        <TextBlock Grid.Column="0" Text="= TOTAL COSTO DE VENTAS"
+                                   FontSize="16" FontWeight="Bold" Foreground="#E65100"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.TotalCostoVentas, StringFormat=C}"
+                                   FontSize="16" FontWeight="Bold" Foreground="#E65100"
+                                   HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <!-- UTILIDAD BRUTA                                       -->
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <Border Background="#E8F5E9" Padding="16" CornerRadius="5" Margin="0,0,0,24"
+                            Cursor="Help">
+                        <Border.ToolTip>
+                            <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                <Border Background="#1B5E20" Padding="14" CornerRadius="6" MaxWidth="380">
+                                    <StackPanel>
+                                        <TextBlock Text="💰 Utilidad Bruta" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                        <TextBlock Text="Fórmula: Ventas Netas − Total Costo de Ventas"
+                                                   Foreground="#C8E6C9" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                        <TextBlock Text="Mide cuánto gana el negocio después de pagar solo lo que costó vender. Si el margen bruto es bajo, el problema está en los precios o en los costos de compra."
+                                                   Foreground="#A5D6A7" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        <TextBlock Text="Margen Bruto = Utilidad Bruta ÷ Ventas Netas × 100"
+                                                   Foreground="#69F0AE" FontSize="11" Margin="0,6,0,0" FontStyle="Italic"/>
+                                    </StackPanel>
+                                </Border>
+                            </ToolTip>
+                        </Border.ToolTip>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="220"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="UTILIDAD BRUTA"
+                                           FontSize="18" FontWeight="Bold" Foreground="#2E7D32"/>
+                                <TextBlock Text="{Binding EstadoResultados.MargenBrutoPorcentaje, StringFormat='Margen bruto: {0:N2}%'}"
+                                           FontSize="12" Foreground="#4CAF50" Margin="0,4,0,0"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding EstadoResultados.UtilidadBruta, StringFormat=C}"
+                                       FontSize="24" FontWeight="Bold" Foreground="#1B5E20"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <!-- SECCIÓN 3 · GASTOS OPERATIVOS                        -->
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <Border Background="#C62828" CornerRadius="4" Padding="12,8" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="3 · GASTOS OPERATIVOS" FontSize="15" FontWeight="Bold" Foreground="White"/>
+                            <TextBlock Text="administración, servicios, sueldos, arriendo — módulo pendiente"
+                                       FontSize="10" Foreground="#FFCDD2"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Grid Margin="20,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Foreground="Gray" Cursor="Help">
+                            <TextBlock.Text>Total Gastos Operativos</TextBlock.Text>
+                            <TextBlock.ToolTip>
+                                <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                    <Border Background="#4A148C" Padding="14" CornerRadius="6" MaxWidth="360">
+                                        <StackPanel>
+                                            <TextBlock Text="🏢 Gastos Operativos" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                            <TextBlock Text="Incluye: sueldos del personal, arriendo, servicios (agua, luz, internet), mantenimiento, papelería y otros gastos necesarios para operar que no son parte del costo de los productos."
+                                                       Foreground="#E1BEE7" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                            <TextBlock Text="⚠ Actualmente en $0. Para completar este análisis registre sus gastos en el módulo de Gastos (pendiente de implementación)."
+                                                       Foreground="#CE93D8" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0" FontStyle="Italic"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.GastosOperativos, StringFormat=C}"
+                                   FontSize="14" Foreground="Gray" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <Border BorderBrush="#BDBDBD" BorderThickness="0,1,0,0" Margin="0,4,0,4"/>
+
+                    <!-- Utilidad Operacional -->
+                    <Grid Margin="0,0,0,24" Cursor="Help">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.ToolTip>
+                            <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                <Border Background="#1A237E" Padding="14" CornerRadius="6" MaxWidth="380">
+                                    <StackPanel>
+                                        <TextBlock Text="⚙ Utilidad Operacional (EBIT)" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                        <TextBlock Text="Fórmula: Utilidad Bruta − Gastos Operativos"
+                                                   Foreground="#C5CAE9" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                        <TextBlock Text="Muestra qué tan rentable es la operación del negocio excluyendo impuestos y financiamiento. En inglés se conoce como EBIT (Earnings Before Interest and Taxes). Es el indicador clave de eficiencia operativa."
+                                                   Foreground="#9FA8DA" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        <TextBlock Text="Margen Operacional = Utilidad Operacional ÷ Ventas Netas × 100"
+                                                   Foreground="#82B1FF" FontSize="11" Margin="0,6,0,0" FontStyle="Italic"/>
+                                    </StackPanel>
+                                </Border>
+                            </ToolTip>
+                        </Grid.ToolTip>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="= UTILIDAD OPERACIONAL"
+                                       FontSize="16" FontWeight="Bold" Foreground="#1565C0"/>
+                            <TextBlock Text="{Binding EstadoResultados.MargenOperacionalPorcentaje, StringFormat='Margen operacional: {0:N2}%'}"
+                                       FontSize="11" Foreground="#1976D2" Margin="0,2,0,0"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.UtilidadOperacional, StringFormat=C}"
+                                   FontSize="16" FontWeight="Bold" Foreground="#1565C0"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <!-- UTILIDAD NETA                                        -->
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <Border Padding="20" CornerRadius="5" Margin="0,0,0,24" Cursor="Help"
+                            Background="#E3F2FD">
+                        <Border.ToolTip>
+                            <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                <Border Background="#0D47A1" Padding="14" CornerRadius="6" MaxWidth="400">
+                                    <StackPanel>
+                                        <TextBlock Text="🏆 Utilidad Neta" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                        <TextBlock Text="Fórmula: Utilidad Operacional (actualmente sin impuestos adicionales)"
+                                                   Foreground="#BBDEFB" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                        <TextBlock Text="Es la ganancia o pérdida final del negocio en el período. Positiva = el negocio generó valor. Negativa = se gastó más de lo que ingresó."
+                                                   Foreground="#90CAF9" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        <TextBlock Text="Margen Neto = Utilidad Neta ÷ Ventas Netas × 100"
+                                                   Foreground="#64B5F6" FontSize="11" Margin="0,6,0,0" FontStyle="Italic"/>
+                                        <TextBlock Text="Un margen neto saludable en retail/alimentos suele estar entre 5% y 15%."
+                                                   Foreground="#42A5F5" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </ToolTip>
+                        </Border.ToolTip>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="220"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="UTILIDAD NETA"
+                                           FontSize="20" FontWeight="Bold" Foreground="#0D47A1"/>
+                                <TextBlock Text="{Binding EstadoResultados.MargenNetoPorcentaje, StringFormat='Margen neto: {0:N2}%'}"
+                                           FontSize="14" Foreground="#1976D2" Margin="0,5,0,0"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding EstadoResultados.UtilidadNeta, StringFormat=C}"
+                                       FontSize="28" FontWeight="Bold" Foreground="#0D47A1"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <!-- DATOS COMPLEMENTARIOS                                -->
+                    <!-- ════════════════════════════════════════════════════ -->
+                    <Border Background="#ECEFF1" CornerRadius="4" Padding="12,8" Margin="0,0,0,12">
+                        <TextBlock Text="📋 DATOS COMPLEMENTARIOS" FontSize="13" FontWeight="Bold" Foreground="#37474F"/>
+                    </Border>
+
+                    <!-- Compras del Período -->
+                    <Grid Margin="20,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Cursor="Help">
+                            <TextBlock.Text>Compras a Proveedores (período)</TextBlock.Text>
+                            <TextBlock.ToolTip>
+                                <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                    <Border Background="#263238" Padding="14" CornerRadius="6" MaxWidth="380">
+                                        <StackPanel>
+                                            <TextBlock Text="🚚 Compras a Proveedores" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                            <TextBlock Text="Suma de todas las compras registradas y no anuladas en el período."
+                                                       Foreground="#CFD8DC" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                            <TextBlock Text="Dato de referencia para el flujo de caja: indica la salida de dinero por reposición de inventario. Comparar con el CPV ayuda a detectar si se está comprando más de lo que se vende (acumulación de stock)."
+                                                       Foreground="#B0BEC5" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.ComprasDelPeriodo, StringFormat=C}"
+                                   FontSize="14" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <!-- Valor Inventario Actual -->
+                    <Grid Margin="20,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="200"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" FontSize="14" Cursor="Help">
+                            <TextBlock.Text>Valor Inventario Actual (al costo)</TextBlock.Text>
+                            <TextBlock.ToolTip>
+                                <ToolTip Style="{StaticResource FinancialTooltipStyle}">
+                                    <Border Background="#263238" Padding="14" CornerRadius="6" MaxWidth="380">
+                                        <StackPanel>
+                                            <TextBlock Text="🏪 Valor Inventario Actual" FontWeight="Bold" Foreground="White" FontSize="13"/>
+                                            <TextBlock Text="Fórmula: Σ (StockActual × PrecioCompra) de todos los productos."
+                                                       Foreground="#CFD8DC" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/>
+                                            <TextBlock Text="Representa el capital inmovilizado en inventario al momento de generar el reporte. Un inventario muy alto puede afectar el flujo de caja. Es el 'Inventario Final' si fuera a usar el método periódico."
+                                                       Foreground="#B0BEC5" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding EstadoResultados.ValorInventarioActual, StringFormat=C}"
+                                   FontSize="14" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+
+        <!-- ── Loading Overlay ───────────────────────────────────────────── -->
+        <Border Grid.Row="0" Grid.RowSpan="3"
+                Background="#80000000"
+                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="⏳" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                <TextBlock Text="Generando reporte..."
+                           FontSize="18" Foreground="White" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ── Mensaje estado vacío ──────────────────────────────────────── -->
+        <StackPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding EstadoResultados}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <TextBlock Text="💵" FontSize="64" HorizontalAlignment="Center"
+                       Margin="0,0,0,20" Opacity="0.3"/>
+            <TextBlock Text="Seleccione un período y genere el Estado de Resultados"
+                       FontSize="16" Foreground="Gray" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

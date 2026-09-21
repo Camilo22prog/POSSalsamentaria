@@ -1,0 +1,587 @@
+<UserControl x:Class="POS.UI.Views.Reports.ReportesMenuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Reports"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ReportesMenuViewModel}"
+             Background="#F5F5F5">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Mejorado -->
+        <Border Grid.Row="0" Background="#673AB7" Padding="30,25">
+            <Border.Effect>
+                <DropShadowEffect Color="#673AB7" Opacity="0.3" BlurRadius="15" ShadowDepth="3"/>
+            </Border.Effect>
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="📊" 
+                              FontSize="36" 
+                              VerticalAlignment="Center"
+                              Margin="0,0,15,0"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="REPORTES Y ANÁLISIS" 
+                                  FontSize="24" 
+                                  FontWeight="Bold"
+                                  Foreground="White"/>
+                        <TextBlock Text="Análisis financiero y operativo completo" 
+                                  FontSize="13"
+                                  Foreground="#E1BEE7"
+                                  Margin="0,5,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Menú Principal (se oculta cuando hay contenido) -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Name="MenuPanel">
+            <StackPanel Margin="40,30">
+                
+                <!-- VENTAS -->
+                <Border Background="White" 
+                       CornerRadius="10" 
+                       Padding="25"
+                       Margin="0,0,0,25">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <TextBlock Text="📈" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="REPORTES DE VENTAS" 
+                                      FontSize="20" 
+                                      FontWeight="Bold"
+                                      Foreground="#673AB7"
+                                      VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <TextBlock Text="Análisis detallado de ingresos, productos, clientes y métodos de pago" 
+                                  FontSize="13"
+                                  Foreground="Gray"
+                                  Margin="0,0,0,20"/>
+                        
+                        <WrapPanel>
+                            <!-- Ventas por Período -->
+                            <Border Background="#2196F3" 
+                                   CornerRadius="8"
+                                   Width="240" 
+                                   Height="150" 
+                                   Margin="0,0,15,15"
+                                   Cursor="Hand"
+                                   MouseDown="BtnVentasPeriodo_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#2196F3" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="📅" 
+                                                  FontSize="42" 
+                                                  HorizontalAlignment="Center"
+                                                  Margin="0,0,0,10"/>
+                                        <TextBlock Text="Ventas por Período" 
+                                                  FontSize="16" 
+                                                  FontWeight="SemiBold"
+                                                  Foreground="White"
+                                                  TextWrapping="Wrap"
+                                                  TextAlignment="Center"
+                                                  Margin="0,0,0,5"/>
+                                        <TextBlock Text="Día • Semana • Mes • Año" 
+                                                  FontSize="11"
+                                                  Foreground="#BBDEFB"
+                                                  TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Ventas por Producto -->
+                            <Border Background="#FF9800" 
+                                   CornerRadius="8"
+                                   Width="240" 
+                                   Height="150" 
+                                   Margin="0,0,15,15"
+                                   Cursor="Hand"
+                                   MouseDown="BtnVentasProducto_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#FF9800" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="📦" 
+                                                  FontSize="42" 
+                                                  HorizontalAlignment="Center"
+                                                  Margin="0,0,0,10"/>
+                                        <TextBlock Text="Ventas por Producto" 
+                                                  FontSize="16" 
+                                                  FontWeight="SemiBold"
+                                                  Foreground="White"
+                                                  TextWrapping="Wrap"
+                                                  TextAlignment="Center"
+                                                  Margin="0,0,0,5"/>
+                                        <TextBlock Text="Top productos • Rentabilidad" 
+                                                  FontSize="11"
+                                                  Foreground="#FFE0B2"
+                                                  TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Ventas por Cliente -->
+                            <Border Background="#9C27B0" 
+                                    CornerRadius="8"
+                                    Width="240" 
+                                    Height="150" 
+                                    Margin="0,0,15,15"
+                                    Cursor="Hand"
+                                    MouseDown="BtnVentasCliente_Click">
+                                    <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#9C27B0" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="👥" 
+                                                  FontSize="42" 
+                                                  HorizontalAlignment="Center"
+                                                  Margin="0,0,0,10"/>
+                                        <TextBlock Text="Ventas por Cliente" 
+                                                  FontSize="16" 
+                                                  FontWeight="SemiBold"
+                                                  Foreground="White"
+                                                  TextWrapping="Wrap"
+                                                  TextAlignment="Center"
+                                                  Margin="0,0,0,5"/>
+                                        <TextBlock Text="Filtro de clientes y análisis de compras" 
+                                                  FontSize="11"
+                                                  Foreground="White"
+                                                  TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <!-- Ventas por Método de Pago -->
+                            <Border Background="#00BCD4" 
+                                CornerRadius="8"
+                                Width="240" 
+                                Height="150" 
+                                Margin="0,0,15,15"
+                                Cursor="Hand"
+                                MouseDown="BtnVentasMetodoPago_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#00BCD4" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="💳" 
+                                                FontSize="42" 
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,10"/>
+                                        <TextBlock Text="Método de Pago" 
+                                                FontSize="16" 
+                                                FontWeight="SemiBold"
+                                                Foreground="White"
+                                                TextWrapping="Wrap"
+                                                TextAlignment="Center"
+                                                Margin="0,0,0,5"/>
+                                        <TextBlock Text="Efectivo • Tarjeta • Transferencia" 
+                                                FontSize="11"
+                                                Foreground="#B2EBF2"
+                                                TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <!-- Desempeño por Usuario -->
+                            <Border Background="#2196F3" 
+                                CornerRadius="8"
+                                Width="240" 
+                                Height="150" 
+                                Margin="0,0,15,15"
+                                Cursor="Hand"
+                                MouseDown="BtnDesempenoUsuarios_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#2196F3" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="👤" 
+                                                FontSize="42" 
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,10"/>
+                                        <TextBlock Text="Desempeño Usuarios" 
+                                                FontSize="16" 
+                                                FontWeight="SemiBold"
+                                                Foreground="White"
+                                                TextWrapping="Wrap"
+                                                TextAlignment="Center"
+                                                Margin="0,0,0,5"/>
+                                        <TextBlock Text="Rendimiento • KPIs" 
+                                                FontSize="11"
+                                                Foreground="#BBDEFB"
+                                                TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <!-- Ventas Anuladas -->
+                            <Border Background="#F44336" 
+                                CornerRadius="8"
+                                Width="240" 
+                                Height="150" 
+                                Margin="0,0,15,15"
+                                Cursor="Hand"
+                                MouseDown="BtnVentasAnuladas_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#F44336" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="🔄" 
+                                                FontSize="42" 
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,10"/>
+                                        <TextBlock Text="Ventas Anuladas" 
+                                                FontSize="16" 
+                                                FontWeight="SemiBold"
+                                                Foreground="White"
+                                                TextWrapping="Wrap"
+                                                TextAlignment="Center"
+                                                Margin="0,0,0,5"/>
+                                        <TextBlock Text="Control • Auditoría" 
+                                                FontSize="11"
+                                                Foreground="#FFCDD2"
+                                                TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- FINANCIERO -->
+                <Border Background="White" 
+                       CornerRadius="10" 
+                       Padding="25"
+                       Margin="0,0,0,25">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <TextBlock Text="💰" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="REPORTES FINANCIEROS" 
+                                      FontSize="20" 
+                                      FontWeight="Bold"
+                                      Foreground="#4CAF50"
+                                      VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <TextBlock Text="Estado de resultados, flujo de caja, rentabilidad y análisis de márgenes" 
+                                  FontSize="13"
+                                  Foreground="Gray"
+                                  Margin="0,0,0,20"/>
+                        
+                        <WrapPanel>
+                            <!-- Estado de Resultados -->
+                            <Border Background="#4CAF50" 
+                                CornerRadius="8"
+                                Width="240" 
+                                Height="150" 
+                                Margin="0,0,15,15"
+                                Cursor="Hand"
+                                MouseDown="BtnEstadoResultados_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#4CAF50" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="💵" 
+                                                FontSize="42" 
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,10"/>
+                                        <TextBlock Text="Estado de Resultados" 
+                                                FontSize="16" 
+                                                FontWeight="SemiBold"
+                                                Foreground="White"
+                                                TextWrapping="Wrap"
+                                                TextAlignment="Center"
+                                                Margin="0,0,0,5"/>
+                                        <TextBlock Text="PyL • Rentabilidad" 
+                                                FontSize="11"
+                                                Foreground="#C8E6C9"
+                                                TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <!-- Reporte de Arqueos -->
+                            <Border Background="#FFC107" 
+                                CornerRadius="8"
+                                Width="240" 
+                                Height="150" 
+                                Margin="0,0,15,15"
+                                Cursor="Hand"
+                                MouseDown="BtnReporteArqueos_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#FFC107" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="💰" 
+                                                FontSize="42" 
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,10"/>
+                                        <TextBlock Text="Reporte de Arqueos" 
+                                                FontSize="16" 
+                                                FontWeight="SemiBold"
+                                                Foreground="White"
+                                                TextWrapping="Wrap"
+                                                TextAlignment="Center"
+                                                Margin="0,0,0,5"/>
+                                        <TextBlock Text="Caja • Diferencias" 
+                                                FontSize="11"
+                                                Foreground="#FFF8E1"
+                                                TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- INVENTARIO -->
+                <Border Background="White" 
+                       CornerRadius="10" 
+                       Padding="25">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <TextBlock Text="📦" FontSize="24" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <TextBlock Text="REPORTES DE INVENTARIO" 
+                                      FontSize="20" 
+                                      FontWeight="Bold"
+                                      Foreground="#FF5722"
+                                      VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <TextBlock Text="Control de stock, rotación, valorización y análisis ABC" 
+                                  FontSize="13"
+                                  Foreground="Gray"
+                                  Margin="0,0,0,20"/>
+                        
+                        <WrapPanel>
+                            <!--- Inventario -->
+                            <Border Background="#FF5722" 
+                                CornerRadius="8"
+                                Width="240" 
+                                Height="150" 
+                                Margin="0,0,15,15"
+                                Cursor="Hand"
+                                MouseDown="BtnInventario_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#FF5722" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="📊" 
+                                                FontSize="42" 
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,10"/>
+                                        <TextBlock Text="Estado de Inventario" 
+                                                FontSize="16" 
+                                                FontWeight="SemiBold"
+                                                Foreground="White"
+                                                TextWrapping="Wrap"
+                                                TextAlignment="Center"
+                                                Margin="0,0,0,5"/>
+                                        <TextBlock Text="Stock • Valorización" 
+                                                FontSize="11"
+                                                Foreground="#FFCCBC"
+                                                TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            <!-- Análisis ABC -->
+                            <Border Background="#9C27B0" 
+                                CornerRadius="8"
+                                Width="240" 
+                                Height="150" 
+                                Margin="0,0,15,15"
+                                Cursor="Hand"
+                                MouseDown="BtnAnalisisABC_Click">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#9C27B0" Opacity="0.5" BlurRadius="20" ShadowDepth="3"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <StackPanel VerticalAlignment="Center" Margin="20">
+                                        <TextBlock Text="🔤" 
+                                                FontSize="42" 
+                                                HorizontalAlignment="Center"
+                                                Margin="0,0,0,10"/>
+                                        <TextBlock Text="Análisis ABC" 
+                                                FontSize="16" 
+                                                FontWeight="SemiBold"
+                                                Foreground="White"
+                                                TextWrapping="Wrap"
+                                                TextAlignment="Center"
+                                                Margin="0,0,0,5"/>
+                                        <TextBlock Text="Pareto • Clasificación" 
+                                                FontSize="11"
+                                                Foreground="#E1BEE7"
+                                                TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+                
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Contenido del reporte -->
+        <Grid Grid.Row="1" Name="ContenidoPanel" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <Border Grid.Row="0" 
+                   Background="White" 
+                   BorderBrush="#E0E0E0" 
+                   BorderThickness="0,0,0,1"
+                   Padding="15">
+                <Button Content="⬅ Volver al Menú"
+                       Padding="15,8"
+                       HorizontalAlignment="Left"
+                       Background="#673AB7"
+                       Foreground="White"
+                       BorderThickness="0"
+                       Cursor="Hand"
+                       FontWeight="SemiBold"
+                       Click="BtnVolver_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#512DA8"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Border>
+            
+            <ContentControl Grid.Row="1" 
+                           Name="ContenidoControl"/>
+        </Grid>
+    </Grid>
+</UserControl>

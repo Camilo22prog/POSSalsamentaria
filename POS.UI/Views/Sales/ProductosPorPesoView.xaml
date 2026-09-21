@@ -1,0 +1,554 @@
+<UserControl x:Class="POS.UI.Views.Sales.ProductosPorPesoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Sales"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ProductosPorPesoViewModel}"
+             d:DesignHeight="600" d:DesignWidth="500"
+             Background="White"
+             Focusable="True"
+             KeyDown="UserControl_KeyDown"
+             Loaded="UserControl_Loaded">
+
+    <!--
+        ❌ NO usar InputBindings para ↑↓ ni Enter aquí.
+           El ListBox consume esas teclas antes de que lleguen al UserControl.
+           Todo el teclado se maneja en UserControl_KeyDown del code-behind.
+    -->
+
+    <Grid>
+
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <!-- VISTA DE CATEGORÍAS                                                -->
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <Grid>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MostrandoProductos}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0" Background="#FF9800" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="⚖️ PRODUCTOS POR PESO"
+                               FontSize="20" FontWeight="Bold"
+                               Foreground="White" HorizontalAlignment="Center"/>
+                    <TextBlock Text="↑↓ navegar · Enter seleccionar · Esc cerrar"
+                               FontSize="11" Foreground="White" Opacity="0.85"
+                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Estado balanza -->
+            <Border Grid.Row="1" Background="#F5F5F5"
+                    BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Ellipse Width="12" Height="12" Margin="0,0,8,0">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Fill" Value="#F44336"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BalanzaConectada}" Value="True">
+                                            <Setter Property="Fill" Value="#4CAF50"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                        <TextBlock FontSize="12" FontWeight="SemiBold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text"       Value="Balanza desconectada"/>
+                                    <Setter Property="Foreground" Value="#F44336"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BalanzaConectada}" Value="True">
+                                            <Setter Property="Text"       Value="Balanza conectada"/>
+                                            <Setter Property="Foreground" Value="#4CAF50"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="Puerto:" FontSize="11" Foreground="Gray" Margin="0,0,5,0"/>
+                        <ComboBox SelectedItem="{Binding PuertoBalanza}" Width="80" FontSize="11">
+                            <ComboBoxItem>COM1</ComboBoxItem>
+                            <ComboBoxItem>COM2</ComboBoxItem>
+                            <ComboBoxItem>COM3</ComboBoxItem>
+                            <ComboBoxItem>COM4</ComboBoxItem>
+                            <ComboBoxItem>COM5</ComboBoxItem>
+                            <ComboBoxItem>COM6</ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button Content="🔍 Detectar" Padding="10,5" Margin="0,0,5,0"
+                                FontSize="11" Background="#2196F3" Foreground="White"
+                                BorderThickness="0" Cursor="Hand"
+                                Command="{Binding DetectarBalanzaCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#1976D2"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <Button Content="🔌 Conectar" Padding="10,5" Margin="0,0,5,0"
+                                FontSize="11" Background="#4CAF50" Foreground="White"
+                                BorderThickness="0" Cursor="Hand"
+                                Command="{Binding ConectarBalanzaCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#45A049"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <Button Content="🔌 Desconectar" Padding="10,5"
+                                FontSize="11" Background="#EF5350" Foreground="White"
+                                BorderThickness="0" Cursor="Hand"
+                                Command="{Binding DesconectarBalanzaCommand}"
+                                Visibility="{Binding BalanzaConectada, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#E53935"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Lista de categorías — el resaltado de foco se aplica desde el code-behind -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="20">
+                <ItemsControl x:Name="ListaCategorias" ItemsSource="{Binding Categorias}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,0,12" CornerRadius="10" Cursor="Hand" Height="90"
+                                    Background="{Binding Color}"
+                                    BorderThickness="3" BorderBrush="Transparent"
+                                    x:Name="CatBorder">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderBrush" Value="#FF9800"/>
+                                                <Setter Property="Effect">
+                                                    <Setter.Value>
+                                                        <DropShadowEffect Color="#000" Opacity="0.25" BlurRadius="12" ShadowDepth="2"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick"
+                                                  Command="{Binding DataContext.SeleccionarCategoriaCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                  CommandParameter="{Binding Categoria}"/>
+                                </Border.InputBindings>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Icono}" FontSize="44"
+                                               VerticalAlignment="Center" Margin="18,0"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Nombre}" FontSize="22"
+                                               FontWeight="Bold" VerticalAlignment="Center" Foreground="#333"/>
+                                    <TextBlock Grid.Column="2" Text="→" FontSize="28"
+                                               VerticalAlignment="Center" Margin="0,0,18,0" Foreground="#888"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <!-- Barra de atajos — categorías -->
+            <Border Grid.Row="3" Background="#FFF3E0"
+                    BorderBrush="#FFE0B2" BorderThickness="0,1,0,0" Padding="10,7">
+                <WrapPanel HorizontalAlignment="Center">
+                    <TextBlock Text="↑↓" FontWeight="Bold" Foreground="#E65100" FontSize="12" Margin="0,0,4,0"/>
+                    <TextBlock Text="Navegar" Foreground="#E65100" FontSize="11" Margin="0,0,16,0"/>
+                    <TextBlock Text="Enter" FontWeight="Bold" Foreground="#E65100" FontSize="12" Margin="0,0,4,0"/>
+                    <TextBlock Text="Seleccionar" Foreground="#E65100" FontSize="11" Margin="0,0,16,0"/>
+                    <TextBlock Text="Esc" FontWeight="Bold" Foreground="#E65100" FontSize="12" Margin="0,0,4,0"/>
+                    <TextBlock Text="Cerrar" Foreground="#E65100" FontSize="11"/>
+                </WrapPanel>
+            </Border>
+        </Grid>
+
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <!-- VISTA DE PRODUCTOS                                                 -->
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <Grid>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MostrandoProductos}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header categoría -->
+            <Border Grid.Row="0" Padding="20">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{Binding CategoriaActual.Color}"/>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="← Volver (Esc)" Padding="10,5"
+                            Background="White" BorderThickness="0" Cursor="Hand"
+                            Command="{Binding VolverCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F5F5F5"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding CategoriaActual.Icono}" FontSize="28" Margin="0,0,10,0"/>
+                            <TextBlock Text="{Binding CategoriaActual.Nombre}" FontSize="20"
+                                       FontWeight="Bold" Foreground="#333" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Peso -->
+            <Border Grid.Row="1" Background="#F5F5F5" Padding="20"
+                    BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="⚖️ Peso (kg)" FontSize="14"
+                               FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" BorderBrush="#BDBDBD" BorderThickness="2"
+                                CornerRadius="5" Background="White">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- IsReadOnly=True evita que el TextBox robe el foco del teclado -->
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding PesoIngresado, UpdateSourceTrigger=PropertyChanged, StringFormat=N3}"
+                                         FontSize="32" FontWeight="Bold" Padding="15"
+                                         BorderThickness="0" HorizontalContentAlignment="Center"
+                                         VerticalContentAlignment="Center"
+                                         IsReadOnly="True" Focusable="False"/>
+                                <TextBlock Grid.Column="1" Text="kg" FontSize="20" FontWeight="Bold"
+                                           Foreground="Gray" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                            </Grid>
+                        </Border>
+                        <Button Grid.Column="1" Content="⚖️ LEER (P)"
+                                Padding="20,15" Margin="10,0,0,0"
+                                FontSize="14" FontWeight="Bold"
+                                Foreground="White" BorderThickness="0" Cursor="Hand"
+                                Focusable="False"
+                                Command="{Binding LeerPesoBalanzaCommand}">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#2196F3"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BalanzaConectada}" Value="False">
+                                            <Setter Property="Background" Value="#BDBDBD"/>
+                                            <Setter Property="IsEnabled"  Value="False"/>
+                                        </DataTrigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#1976D2"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!--
+                ListBox de productos.
+                Focusable="False" en el ListBox para que el UserControl
+                mantenga el foco y KeyDown llegue siempre al handler correcto.
+                La selección sigue funcionando con el mouse normalmente.
+            -->
+            <ListBox x:Name="ListaProductos"
+                     Grid.Row="2"
+                     ItemsSource="{Binding ProductosDisponibles}"
+                     SelectedItem="{Binding ProductoSeleccionado, Mode=TwoWay}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Focusable="False"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     Padding="15">
+
+                <ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBox">
+                                    <ScrollViewer Padding="{TemplateBinding Padding}"
+                                                  VerticalScrollBarVisibility="Auto">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.Style>
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Padding"       Value="0"/>
+                        <Setter Property="Margin"        Value="0,0,0,10"/>
+                        <Setter Property="Background"    Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Focusable"     Value="False"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="CardBorder"
+                                            Background="White"
+                                            BorderBrush="#E0E0E0"
+                                            BorderThickness="2"
+                                            CornerRadius="8"
+                                            Padding="15"
+                                            SnapsToDevicePixels="True">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Border x:Name="CheckCircle"
+                                                    Grid.Column="0"
+                                                    Width="24" Height="24"
+                                                    CornerRadius="12"
+                                                    BorderThickness="2"
+                                                    BorderBrush="#BDBDBD"
+                                                    Background="White"
+                                                    VerticalAlignment="Center"
+                                                    Margin="0,0,14,0">
+                                                <TextBlock x:Name="CheckMark"
+                                                           Text="✔"
+                                                           FontSize="12" FontWeight="Bold"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           Visibility="Collapsed"/>
+                                            </Border>
+
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock x:Name="NombreText"
+                                                           Text="{Binding Nombre}"
+                                                           FontSize="16" FontWeight="SemiBold"
+                                                           Foreground="#212121"/>
+                                                <TextBlock Text="{Binding Codigo}"
+                                                           FontSize="12" Foreground="#9E9E9E"
+                                                           Margin="0,2,0,0"/>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                <TextBlock x:Name="PrecioText"
+                                                           Text="{Binding PrecioPorKilo, StringFormat=C}"
+                                                           FontSize="20" FontWeight="Bold"
+                                                           Foreground="#4CAF50"
+                                                           HorizontalAlignment="Right"/>
+                                                <TextBlock Text="/kg" FontSize="12"
+                                                           Foreground="#9E9E9E" HorizontalAlignment="Right"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="CardBorder"  Property="Background"  Value="#F1F8E9"/>
+                                            <Setter TargetName="CardBorder"  Property="BorderBrush" Value="#A5D6A7"/>
+                                            <Setter TargetName="NombreText"  Property="Foreground"  Value="#2E7D32"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="CardBorder"  Property="Background"  Value="#E8F5E9"/>
+                                            <Setter TargetName="CardBorder"  Property="BorderBrush" Value="#43A047"/>
+                                            <Setter TargetName="CheckCircle" Property="Background"  Value="#43A047"/>
+                                            <Setter TargetName="CheckCircle" Property="BorderBrush" Value="#2E7D32"/>
+                                            <Setter TargetName="CheckMark"   Property="Visibility"  Value="Visible"/>
+                                            <Setter TargetName="NombreText"  Property="Foreground"  Value="#1B5E20"/>
+                                            <Setter TargetName="PrecioText"  Property="Foreground"  Value="#2E7D32"/>
+                                        </Trigger>
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsSelected"  Value="True"/>
+                                                <Condition Property="IsMouseOver" Value="True"/>
+                                            </MultiTrigger.Conditions>
+                                            <Setter TargetName="CardBorder" Property="Background"  Value="#DCEDC8"/>
+                                            <Setter TargetName="CardBorder" Property="BorderBrush" Value="#2E7D32"/>
+                                        </MultiTrigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+
+            <!-- Botón agregar + barra de atajos -->
+            <Border Grid.Row="3" Background="White"
+                    BorderBrush="#E0E0E0" BorderThickness="0,1,0,0" Padding="15">
+                <StackPanel>
+                    <Button Content="✅ AGREGAR AL CARRITO (Enter)"
+                            Padding="20,14" FontSize="16" FontWeight="Bold"
+                            Background="#4CAF50" Foreground="White"
+                            BorderThickness="0" Cursor="Hand"
+                            Focusable="False"
+                            Command="{Binding AgregarAlCarritoCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#45A049"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- Barra de atajos — productos -->
+                    <Border Background="#E8F5E9" CornerRadius="4" Padding="10,6" Margin="0,8,0,0">
+                        <WrapPanel HorizontalAlignment="Center">
+                            <TextBlock Text="↑↓" FontWeight="Bold" Foreground="#2E7D32" FontSize="12" Margin="0,0,4,0"/>
+                            <TextBlock Text="Navegar" Foreground="#2E7D32" FontSize="11" Margin="0,0,14,0"/>
+                            <TextBlock Text="P" FontWeight="Bold" Foreground="#2E7D32" FontSize="12" Margin="0,0,4,0"/>
+                            <TextBlock Text="Leer balanza" Foreground="#2E7D32" FontSize="11" Margin="0,0,14,0"/>
+                            <TextBlock Text="Enter" FontWeight="Bold" Foreground="#2E7D32" FontSize="12" Margin="0,0,4,0"/>
+                            <TextBlock Text="Agregar" Foreground="#2E7D32" FontSize="11" Margin="0,0,14,0"/>
+                            <TextBlock Text="Esc" FontWeight="Bold" Foreground="#2E7D32" FontSize="12" Margin="0,0,4,0"/>
+                            <TextBlock Text="Volver" Foreground="#2E7D32" FontSize="11"/>
+                        </WrapPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

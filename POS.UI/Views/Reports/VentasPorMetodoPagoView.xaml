@@ -1,0 +1,342 @@
+<UserControl x:Class="POS.UI.Views.Reports.VentasPorMetodoPagoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:POS.UI.ViewModels.Reports"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:VentasPorMetodoPagoViewModel}"
+             d:DesignHeight="700"
+             d:DesignWidth="1200"
+             Background="White">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#00BCD4" 
+                Padding="20">
+            <TextBlock>
+                <Run Text="💳" FontSize="24"/>
+                <Run Text=" VENTAS POR MÉTODO DE PAGO" 
+                     FontSize="20" 
+                     FontWeight="Bold"
+                     Foreground="White"/>
+            </TextBlock>
+        </Border>
+
+        <!-- Filtros -->
+        <Border Grid.Row="1" 
+                Background="#F5F5F5"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1"
+                Padding="20">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Fecha Inicio:" 
+                          VerticalAlignment="Center"
+                          Margin="0,0,10,0"
+                          FontWeight="SemiBold"/>
+                <DatePicker SelectedDate="{Binding FechaInicio, Mode=TwoWay}"
+                           Width="140"
+                           Margin="0,0,20,0"/>
+
+                <TextBlock Text="Fecha Fin:" 
+                          VerticalAlignment="Center"
+                          Margin="0,0,10,0"
+                          FontWeight="SemiBold"/>
+                <DatePicker SelectedDate="{Binding FechaFin, Mode=TwoWay}"
+                           Width="140"
+                           Margin="0,0,20,0"/>
+
+                <Button Content="🔍 Generar Reporte"
+                       Padding="20,10"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Background="#4CAF50"
+                       Foreground="White"
+                       BorderThickness="0"
+                       Cursor="Hand"
+                       Command="{Binding GenerarReporteCommand}"/>
+                <Button Content="📥 Exportar General"
+                Padding="20,10"
+                Margin="10,0,0,0"
+                FontSize="14"
+                FontWeight="SemiBold"
+                Background="#FF9800"
+                Foreground="White"
+                BorderThickness="0"
+                Cursor="Hand"
+                Command="{Binding ExportarGeneralCommand}"/>
+
+                <!-- Rangos rápidos -->
+                <TextBlock Text="Rangos:" 
+                          VerticalAlignment="Center"
+                          Margin="30,0,10,0"
+                          FontWeight="SemiBold"
+                          Foreground="Gray"/>
+                
+                <Button Content="Hoy" 
+                       Command="{Binding EstablecerRangoRapidoCommand}"
+                       CommandParameter="Hoy"
+                       Padding="10,5" Margin="0,0,5,0"
+                       FontSize="11" Background="#E3F2FD" BorderThickness="0" Cursor="Hand"/>
+                
+                <Button Content="Semana" 
+                       Command="{Binding EstablecerRangoRapidoCommand}"
+                       CommandParameter="Semana"
+                       Padding="10,5" Margin="0,0,5,0"
+                       FontSize="11" Background="#E3F2FD" BorderThickness="0" Cursor="Hand"/>
+                
+                <Button Content="Mes" 
+                       Command="{Binding EstablecerRangoRapidoCommand}"
+                       CommandParameter="Mes"
+                       Padding="10,5" Margin="0,0,5,0"
+                       FontSize="11" Background="#E3F2FD" BorderThickness="0" Cursor="Hand"/>
+                
+                <Button Content="Año" 
+                       Command="{Binding EstablecerRangoRapidoCommand}"
+                       CommandParameter="Año"
+                       Padding="10,5"
+                       FontSize="11" Background="#E3F2FD" BorderThickness="0" Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenido con Expanders -->
+        <ScrollViewer Grid.Row="2" 
+                     VerticalScrollBarVisibility="Auto"
+                     Margin="20">
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MetodosPago.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+
+            <ItemsControl ItemsSource="{Binding MetodosPago}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                                 Margin="0,0,0,15">
+                            <Expander.Header>
+                                <Grid Width="{Binding RelativeSource={RelativeSource AncestorType=Expander}, Path=ActualWidth}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Método de Pago -->
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                        <TextBlock Text="💳" 
+                                                  FontSize="24" 
+                                                  VerticalAlignment="Center"
+                                                  Margin="0,0,15,0"/>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding MetodoTexto}" 
+                                                      FontSize="18"
+                                                      FontWeight="Bold"
+                                                      Foreground="#00838F"/>
+                                            <TextBlock FontSize="12" Foreground="Gray">
+                                                <Run Text="{Binding CantidadTransacciones, Mode=OneWay}"/>
+                                                <Run Text=" transacciones"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Monto Total -->
+                                    <StackPanel Grid.Column="1" 
+                                               VerticalAlignment="Center"
+                                               Margin="20,0">
+                                        <TextBlock Text="Monto Total" 
+                                                  FontSize="11"
+                                                  Foreground="Gray"
+                                                  HorizontalAlignment="Right"/>
+                                        <TextBlock Text="{Binding MontoTotal, StringFormat=C}" 
+                                                  FontSize="22"
+                                                  FontWeight="Bold"
+                                                  Foreground="#4CAF50"
+                                                  HorizontalAlignment="Right"/>
+                                    </StackPanel>
+
+                                    <!-- Porcentaje -->
+                                    <Border Grid.Column="2"
+                                           Background="#FF9800"
+                                           CornerRadius="15"
+                                           Padding="12,6"
+                                           Margin="10,0">
+                                        <TextBlock FontSize="14" 
+                                                  FontWeight="Bold"
+                                                  Foreground="White"
+                                                  HorizontalAlignment="Center">
+                                            <Run Text="{Binding PorcentajeDelTotal, StringFormat='{}{0:N1}%', Mode=OneWay}"/>
+                                        </TextBlock>
+                                    </Border>
+
+                                    <!-- Indicador de expansión -->
+                                    <TextBlock Grid.Column="3"
+                                              Text="▼"
+                                              FontSize="12"
+                                              Foreground="#00838F"
+                                              VerticalAlignment="Center"
+                                              Margin="10,0,5,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <RotateTransform Angle="0"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                                        <Setter Property="RenderTransform">
+                                                            <Setter.Value>
+                                                                <RotateTransform Angle="180"/>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </Expander.Header>
+
+                            <!-- Detalles de transacciones -->
+                            <StackPanel>
+                                <!-- ✅ Header con botón exportar -->
+                                <Border Background="#00838F" Padding="10" Margin="10,10,10,0">
+                                    <Grid>
+                                        <TextBlock Text="DETALLE DE TRANSACCIONES" 
+                                                FontWeight="Bold"
+                                                Foreground="White"
+                                                VerticalAlignment="Center"/>
+                                        <Button Content="📥 Exportar Detalle"
+                                            HorizontalAlignment="Right"
+                                            Padding="10,5"
+                                            FontSize="11"
+                                            Background="#006064"
+                                            Foreground="White"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding ExportarDetalleCommand}"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- DataGrid de detalles -->
+                                <Border Background="#F5F5F5" 
+                                    Padding="15"
+                                    Margin="10,0,10,0">
+                                    <DataGrid ItemsSource="{Binding Detalles}"
+                                            AutoGenerateColumns="False"
+                                            IsReadOnly="True"
+                                            GridLinesVisibility="Horizontal"
+                                            HeadersVisibility="Column"
+                                            RowHeight="35"
+                                            FontSize="12"
+                                            Background="White"
+                                            BorderThickness="1"
+                                            BorderBrush="#E0E0E0">
+                                        <DataGrid.ColumnHeaderStyle>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="Background" Value="#00838F"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                <Setter Property="Padding" Value="10,8"/>
+                                                <Setter Property="FontSize" Value="12"/>
+                                            </Style>
+                                        </DataGrid.ColumnHeaderStyle>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="# Venta" 
+                                                            Binding="{Binding NumeroVenta}" 
+                                                            Width="100"/>
+                                            <DataGridTextColumn Header="Fecha" 
+                                                            Binding="{Binding FechaVenta, StringFormat='dd/MM/yyyy HH:mm'}" 
+                                                            Width="140"/>
+                                            <DataGridTextColumn Header="Cliente" 
+                                                            Binding="{Binding Cliente}" 
+                                                            Width="*"/>
+                                            <DataGridTextColumn Header="Usuario" 
+                                                            Binding="{Binding Usuario}" 
+                                                            Width="150"/>
+                                            <DataGridTextColumn Header="Monto" 
+                                                            Binding="{Binding Monto, StringFormat=C}" 
+                                                            Width="120">
+                                                <DataGridTextColumn.ElementStyle>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                        <Setter Property="Foreground" Value="#4CAF50"/>
+                                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                    </Style>
+                                                </DataGridTextColumn.ElementStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn Header="Autorización" 
+                                                            Binding="{Binding NumeroAutorizacion}" 
+                                                            Width="130"/>
+                                            <DataGridTextColumn Header="Referencia" 
+                                                            Binding="{Binding Referencia}" 
+                                                            Width="120"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Border>
+                            </StackPanel>
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Loading Overlay -->
+        <Border Grid.Row="0"
+               Grid.RowSpan="3"
+               Background="#80000000"
+               Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel VerticalAlignment="Center" 
+                       HorizontalAlignment="Center">
+                <TextBlock Text="⏳"
+                          FontSize="48"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,10"/>
+                <TextBlock Text="Generando reporte..."
+                          FontSize="18"
+                          Foreground="White"
+                          HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Mensaje cuando no hay datos -->
+        <StackPanel Grid.Row="2"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding MetodosPago.Count}" Value="0">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            
+            <TextBlock Text="💳" 
+                      FontSize="64"
+                      HorizontalAlignment="Center"
+                      Margin="0,0,0,20"
+                      Opacity="0.3"/>
+            <TextBlock Text="Genere un reporte para ver el análisis por método de pago" 
+                      FontSize="16"
+                      Foreground="Gray"
+                      HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

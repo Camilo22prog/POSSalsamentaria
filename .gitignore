@@ -1,0 +1,36 @@
+## .NET Core / WPF
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Publicación / Instalador (archivos pesados generados, no van al repo)
+publish/
+installer_output/
+releases/
+Actualizacion_v*/
+*.exe
+
+## Paquetes de actualización comprimidos
+*.zip
+
+## Base de datos - backups (pueden contener datos reales de clientes)
+database/backups/*.bak
+*.bak
+*.mdf
+*.ldf
+
+## Visual Studio
+.vs/
+*.vsidx
+*.suo
+
+## Archivos temporales
+*.tmp
+*.log
+
+## Sistema
+Thumbs.db
+.DS_Store
