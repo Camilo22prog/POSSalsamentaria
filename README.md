@@ -2,7 +2,7 @@
 
 Sistema de punto de venta (POS) de escritorio para salsamentarías, desarrollado en WPF/.NET 8 con arquitectura por capas.
 
-## 📋 Tabla de contenido
+## Tabla de contenido
 
 - [Stack tecnológico](#-stack-tecnológico)
 - [Arquitectura del proyecto](#-arquitectura-del-proyecto)
@@ -34,7 +34,7 @@ Sistema de punto de venta (POS) de escritorio para salsamentarías, desarrollado
 
 ---
 
-## 🏗️ Arquitectura del proyecto
+##  Arquitectura del proyecto
 
 El proyecto sigue una arquitectura por capas (Clean Architecture simplificada):
 
@@ -55,7 +55,7 @@ POSSalsamentaria/
 
 ---
 
-## ✅ Requisitos previos
+##  Requisitos previos
 
 Antes de clonar el proyecto, instala:
 
@@ -72,7 +72,7 @@ Antes de clonar el proyecto, instala:
 
 ---
 
-## ⚙️ Instalación y configuración
+##  Instalación y configuración
 
 ### 1. Clonar el repositorio
 
@@ -101,7 +101,7 @@ Abre `POS.UI/appsettings.json` y verifica que apunte a tu instancia local de SQL
 }
 ```
 
-> ⚠️ Si tu instancia de SQL Server tiene otro nombre (ej. `TU-PC\SQLEXPRESS`), ajústalo aquí.
+>  Si tu instancia de SQL Server tiene otro nombre (ej. `TU-PC\SQLEXPRESS`), ajústalo aquí.
 
 ### 4. Crear y migrar la base de datos
 
@@ -115,7 +115,7 @@ cd ..
 
 Esto crea la base de datos `POSSalsamentaria` con todas las tablas mediante las migraciones de Entity Framework.
 
-> 💡 Si no tienes la herramienta `dotnet-ef` instalada:
+>  Si no tienes la herramienta `dotnet-ef` instalada:
 > ```powershell
 > dotnet tool install --global dotnet-ef
 > ```
@@ -142,7 +142,7 @@ GO
 
 ---
 
-## ▶️ Ejecutar el proyecto
+##  Ejecutar el proyecto
 
 ### Desde Visual Studio
 1. Abre `POSSalsamentaria.sln`
@@ -159,11 +159,11 @@ dotnet run --project POS.UI
 - Usuario: `admin`
 - Contraseña: `admin`
 
-> ⚠️ Cambiar la contraseña inmediatamente después del primer inicio de sesión.
+>  Cambiar la contraseña inmediatamente después del primer inicio de sesión.
 
 ---
 
-## 🗄️ Estructura de la base de datos
+##  Estructura de la base de datos
 
 Tablas principales:
 
@@ -190,7 +190,7 @@ dotnet ef database update --startup-project ../POS.UI
 
 ---
 
-## 🌿 Flujo de trabajo con Git
+##  Flujo de trabajo con Git
 
 Para evitar conflictos trabajando en equipo:
 
@@ -228,8 +228,7 @@ Para evitar conflictos trabajando en equipo:
 - `db:` cambios de base de datos/migraciones
 
 ---
-
-## 👥 Roles y permisos
+##  Roles y permisos
 
 | Rol | Permisos |
 |---|---|
@@ -239,7 +238,7 @@ Para evitar conflictos trabajando en equipo:
 
 ---
 
-## 📦 Compilar instalador (opcional)
+##  Compilar instalador (opcional)
 
 Solo necesario para generar el `.exe` de distribución final (no para desarrollo diario).
 
@@ -255,7 +254,7 @@ El instalador queda en `.\installer_output\`.
 
 ---
 
-## 🐛 Problemas comunes
+##  Problemas comunes
 
 | Problema | Solución |
 |---|---|
@@ -266,6 +265,3 @@ El instalador queda en `.\installer_output\`.
 
 ---
 
-## 📞 Contacto
-
-Dudas sobre el proyecto: contactar a Camilix (mantenedor principal).
